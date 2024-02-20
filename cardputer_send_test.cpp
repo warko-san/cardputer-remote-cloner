@@ -3,7 +3,7 @@
 #include "PinDefinitionsAndMore.h"  // Define macros for input and output pin etc.
 #include "M5Cardputer.h"
 #include <IRremote.hpp>
-#include "sd.h"
+#include "sd_card.h"
 
 /*
  * Specify which protocol(s) should be used for decoding.
@@ -118,6 +118,8 @@ struct MENU_IR {
   IRData receivedIRData;
 };
 
+SDcard sdCard;
+
 uint8_t currentStoredCodes = 1;
 uint8_t selectedSavedCode = 0;
 uint8_t cursor = 0;
@@ -129,11 +131,13 @@ bool isSwitching = true;
 void storeCode();
 void sendCode(IRData *aIRDataToSend);
 
+bool check_next_press();
+
 void drawmenu(MENU thismenu[], int size) {
   DISP.setTextColor(FGCOLOR, BGCOLOR);
   DISP.setTextSize(SMALL_TEXT);
   DISP.fillScreen(BGCOLOR);
-  DISP.setCursor(0, 5, 1);
+  DISP.setCursor(0, 5);
   // scrolling menu
   if (cursor < 0) {
     cursor = size - 1;  // rollover hack for up-arrow on cardputer
@@ -155,7 +159,7 @@ void drawmenu(MENU thismenu[], int size) {
 void drawmenu(MENU_IR thismenu[], int size) {
   DISP.setTextSize(SMALL_TEXT);
   DISP.fillScreen(BGCOLOR);
-  DISP.setCursor(0, 5, 1);
+  DISP.setCursor(0, 5);
   // scrolling menu
   if (cursor < 0) {
     cursor = size - 1;  // rollover hack for up-arrow on cardputer
@@ -268,7 +272,7 @@ void read_setup() {
   DISP.clearDisplay();
   DISP.setTextColor(WHITE);
   DISP.setTextSize(MEDIUM_TEXT);
-  DISP.setCursor(10, 20, 1);
+  DISP.setCursor(10, 20);
   DISP.println("Reading:");
   DISP.setTextColor(FGCOLOR, BGCOLOR);
   DISP.setTextSize(SMALL_TEXT);
@@ -299,11 +303,11 @@ void read_loop() {
     /*
      * Button is not pressed and data available -> store received data and resume
      */
-    DISP.setCursor(10, 50, 1);
+    DISP.setCursor(10, 50);
     DISP.print("Address:");
     DISP.println(IrReceiver.decodedIRData.address, HEX);
     DISP.fillRect(10, 70, DISP.width(), 20, BGCOLOR); // Reset the back of line
-    DISP.setCursor(10, 70, 1);
+    DISP.setCursor(10, 70);
     DISP.print("Command: 0x");
     DISP.println(IrReceiver.decodedIRData.command, HEX);
     storeCode();
@@ -357,11 +361,11 @@ void battery_drawmenu(uint8_t battery) {
   // Battery percentage
   DISP.setTextColor(WHITE);
   DISP.setTextSize(BIG_TEXT);
-  DISP.setCursor(80, 45, 1);
+  DISP.setCursor(80, 45);
   DISP.print(battery);
   DISP.println("%");
   // Exit text
-  DISP.setCursor(10, 120, 1);
+  DISP.setCursor(10, 120);
   DISP.setTextSize(TINY_TEXT);
   DISP.println("Exit");
   DISP.setTextColor(FGCOLOR, BGCOLOR);
@@ -418,7 +422,7 @@ void setup() {
   M5Cardputer.begin(cfg);
   DISP.setRotation(rotation);
   DISP.setTextColor(FGCOLOR, BGCOLOR);
-  setupSdCard();
+  sdCard.setupSdCard();
 }
 
 void loop() {
