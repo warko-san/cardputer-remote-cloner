@@ -350,11 +350,11 @@ void enter_name_loop()
       {
         if (data.indexOf('/') != -1)
         {
-          sdCard.createDir(SD, data);
+          sdCard.createDir(SD, data.c_str());
         }
         else
         {
-          sdCard.createDir(SD, "/" + data);
+          sdCard.createDir(SD, ("/" + data).c_str());
         }
 
         isSwitching = true;
