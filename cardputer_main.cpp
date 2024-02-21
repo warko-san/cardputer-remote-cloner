@@ -384,7 +384,7 @@ void copy_menu_loop()
   if (check_next_press())
   {
     cursor++;
-    cursor = cursor % mmenu_size;
+    cursor = cursor % copy_remote_size;
     drawmenu(copyRContrM, copy_remote_size);
     delay(250);
   }
@@ -409,7 +409,7 @@ void copy_main_contr_loop()
   if (check_next_press())
   {
     cursor++;
-    cursor = cursor % mmenu_size;
+    cursor = cursor % copy_main_size;
     drawmenu(mainCtrM, copy_main_size);
     delay(250);
   }
@@ -434,8 +434,54 @@ void copy_num_loop()
   if (check_next_press())
   {
     cursor++;
-    cursor = cursor % mmenu_size;
+    cursor = cursor % copy_num_size;
     drawmenu(btnCtrM, copy_num_size);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = btnCtrM[cursor].command;
+  }
+}
+
+void copy_nav_setup() {
+cursor = 0;
+  rstOverride = true;
+  drawmenu(navCtrM, copy_nav_size);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void copy_nav_loop() {
+if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % copy_nav_size;
+    drawmenu(navCtrM, copy_nav_size);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = btnCtrM[cursor].command;
+  }
+}
+
+void copy_misc_setup() {
+cursor = 0;
+  rstOverride = true;
+  drawmenu(miscCtrM, copy_misc_size);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void copy_misc_loop() {
+if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % copy_misc_size;
+    drawmenu(miscCtrM, copy_misc_size);
     delay(250);
   }
   if (check_select_press())
