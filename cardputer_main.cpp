@@ -1,137 +1,5 @@
-#include <Arduino.h>
-
-#include "PinDefinitionsAndMore.h"  // Define macros for input and output pin etc.
-#include "M5Cardputer.h"
-#include <IRremote.hpp>
 #include "sd_card.h"
-
-/*
- * Specify which protocol(s) should be used for decoding.
- * If no protocol is defined, all protocols (except Bang&Olufsen) are active.
- * This must be done before the #include <IRremote.hpp>
- */
-//#define DECODE_DENON        // Includes Sharp
-//#define DECODE_JVC
-//#define DECODE_KASEIKYO
-//#define DECODE_PANASONIC    // alias for DECODE_KASEIKYO
-//#define DECODE_LG
-//#define DECODE_NEC          // Includes Apple and Onkyo
-#define DECODE_SAMSUNG
-//#define DECODE_SONY
-//#define DECODE_RC5
-//#define DECODE_RC6
-
-//#define DECODE_BOSEWAVE
-//#define DECODE_LEGO_PF
-//#define DECODE_MAGIQUEST
-//#define DECODE_WHYNTER
-//#define DECODE_FAST
-
-//#define EXCLUDE_UNIVERSAL_PROTOCOLS // Saves up to 1000 bytes program memory.
-//#define EXCLUDE_EXOTIC_PROTOCOLS // saves around 650 bytes program memory if all other protocols are active
-//#define NO_LED_FEEDBACK_CODE      // saves 92 bytes program memory
-//#define RECORD_GAP_MICROS 12000   // Default is 5000. Activate it for some LG air conditioner protocols
-//#define SEND_PWM_BY_TIMER         // Disable carrier PWM generation in software and use (restricted) hardware PWM.
-//#define USE_NO_SEND_PWM           // Use no carrier PWM, just simulate an active low receiver signal. Overrides SEND_PWM_BY_TIMER definition
-
-// MARK_EXCESS_MICROS is subtracted from all marks and added to all spaces before decoding,
-// to compensate for the signal forming of different IR receiver modules. See also IRremote.hpp line 142.
-#define MARK_EXCESS_MICROS 20  // Adapt it to your IR receiver module. 20 is recommended for the cheap VS1838 modules.
-
-#define DEBUG  // Activate this for lots of lovely debug output from the decoders.
-
-// -------- SYSTEM LOGIC SETUP ----------
-#define BGCOLOR BLACK
-#define FGCOLOR RED
-
-#define BIG_TEXT 4
-#define MEDIUM_TEXT 3
-#define SMALL_TEXT 2
-#define TINY_TEXT 1
-// -=-=- FEATURES -=-=-
-#define KB
-#define HID
-#define ACTIVE_LOW_IR
-#define USE_EEPROM
-#define SDCARD
-// -=-=- ALIASES -=-=-
-#define DISP M5Cardputer.Display
-#define IRLED 44
-#define BACKLIGHT 38
-#define MINBRIGHT 165
-#define SPEAKER M5Cardputer.Speaker
-#define SD_CLK_PIN 40
-#define SD_MISO_PIN 39
-#define SD_MOSI_PIN 14
-#define SD_CS_PIN 12
-#define VBAT_PIN 10
-#define M5LED_ON LOW
-#define M5LED_OFF HIGH
-
-/// SWITCHER ///
-// Proc codes
-// 1  - Main Menu
-// 2  - Read Menu
-// 3  - Send Menu
-// 4  - Settings
-// 5  - Battery info
-// 6  - Copy remote enter name
-// 7  - Copy remote controls
-// 8  - Copy main controls
-// 9  - Copy numbers
-// 10 - Copy navigation
-// 11 - Copy misc
-// 12 - Load remote
-// ===============================
-// 13 - TV-B-Gone Region Setting
-// 14 - Wifi scanning
-// 15 - Wifi scan results
-// 16 - Bluetooth Spam Menu
-// 17 - Bluetooth Maelstrom
-// 18 - QR Codes
-// 19 - NEMO Portal
-// 20 - Attack menu
-// 21 - Deauth Attack
-// .. - ..
-// 97 - Mount/UnMount SD Card on M5Stick devices, if SDCARD is declared
-
-int SEND_BUTTON_PIN = 0;
-
-int DELAY_BETWEEN_REPEAT = 100;
-
-// Storage for the recorded code
-struct storedIRDataStruct {
-  IRData receivedIRData;
-  IRData irDataArray[52];
-  // extensions for sendRaw
-  uint8_t rawCode[RAW_BUFFER_LENGTH];  // The durations if raw
-  uint8_t rawCodeLength;               // The length of the code
-} sStoredIRData;
-
-struct MENU {
-  char name[19];
-  int command;
-};
-
-struct MENU_IR {
-  char name[19];
-  IRData receivedIRData;
-};
-
-SDcard sdCard;
-
-uint8_t currentStoredCodes = 1;
-uint8_t selectedSavedCode = 0;
-uint8_t cursor = 0;
-uint8_t rotation = 1;
-uint8_t current_proc = 1;
-bool rstOverride = false;  // Reset Button Override. Set to true when navigating menus.
-bool isSwitching = true;
-
-void storeCode();
-void sendCode(IRData *aIRDataToSend);
-
-bool check_next_press();
+#include "cardputer_main.h"
 
 void drawmenu(MENU thismenu[], int size) {
   DISP.setTextColor(FGCOLOR, BGCOLOR);
@@ -236,15 +104,6 @@ void check_menu_press() {
   }
 }
 
-/// MAIN MENU ///
-MENU mmenu[] = {
-  { "Read signals", 2 },  // We jump to the region menu first
-  { "Send signals", 3 },
-  { "Battery info", 5 },
-  { "Settings", 4 }
-};
-int mmenu_size = sizeof(mmenu) / sizeof(MENU);
-
 void mmenu_setup() {
   cursor = 0;
   rstOverride = true;
@@ -287,18 +146,6 @@ void read_setup() {
 }
 
 void read_loop() {
-  // if (check_next_press()) {
-  //   cursor++;
-  //   cursor = cursor % mmenu_size;
-  //   drawmenu(mmenu, mmenu_size);
-  //   delay(250);
-  // }
-  // if (check_select_press()) {
-  //   rstOverride = false;
-  //   isSwitching = true;
-  //   current_proc = mmenu[cursor].command;
-  // }
-
   if (IrReceiver.decode()) {
     /*
      * Button is not pressed and data available -> store received data and resume
@@ -315,10 +162,6 @@ void read_loop() {
   }
   delay(200);
 }
-
-MENU_IR sendMenu[52] = {
-  { "Send signals:", sStoredIRData.receivedIRData }
-};
 
 void send_setup() {
   IrReceiver.stop();
@@ -343,7 +186,6 @@ void send_loop() {
 }
 
 /// BATTERY INFO ///
-uint8_t oldBattery = 0;
 void battery_drawmenu(uint8_t battery) {
   // Battery bar color definition
   uint16_t batteryBarColor = BLUE;
