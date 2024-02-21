@@ -1,11 +1,4 @@
 #include "sd_card.h"
-#include <SD.h>
-#include <FS.h>
-
-#define SD_CLK_PIN 40
-#define SD_MISO_PIN 39
-#define SD_MOSI_PIN 14
-#define SD_CS_PIN 12
 
 SDcard::SDcard() {}
 
