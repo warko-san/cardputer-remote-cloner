@@ -313,25 +313,18 @@ void settings_loop()
 }
 
 M5Canvas canvas(&M5Cardputer.Display);
-String data = "> ";
+String data = "";
+
 void enter_name_setup()
 {
-  DISP.setTextSize(0.5);
-  DISP.drawRect(0, 0, DISP.width(),
-                DISP.height() - 28, GREEN);
-  DISP.setFont(&fonts::FreeSerifBoldItalic18pt7b);
+  DISP.clear();
+  DISP.setCursor(10, 10);
+  DISP.println("Enter remote name");
+  DISP.setCursor(10, DISP.height() - 48);
+  DISP.println(">");
+  data = "";
 
-  DISP.fillRect(0, DISP.height() - 4,
-                DISP.width(), 4, GREEN);
-
-  canvas.setFont(&fonts::FreeSerifBoldItalic18pt7b);
-  canvas.setTextSize(0.5);
-  canvas.createSprite(DISP.width() - 8,
-                      DISP.height() - 36);
-  canvas.setTextScroll(true);
-  canvas.println("Press Key and Enter to Input Text");
-  canvas.pushSprite(4, 4);
-  DISP.drawString(data, 4, DISP.height() - 24);
+  delay(400);
 }
 
 void enter_name_loop()
@@ -355,18 +348,15 @@ void enter_name_loop()
 
       if (status.enter)
       {
-        data.remove(0, 2);
         canvas.println(data);
         canvas.pushSprite(4, 4);
-        data = "> ";
+        data = "";
       }
 
-      M5Cardputer.Display.fillRect(0, M5Cardputer.Display.height() - 28,
-                                   M5Cardputer.Display.width(), 25,
-                                   BLACK);
+      DISP.fillRect(25, DISP.height() - 48, DISP.width(), 25, BLACK);
 
-      M5Cardputer.Display.drawString(data, 4,
-                                     M5Cardputer.Display.height() - 24);
+      DISP.setCursor(25, DISP.height() - 48);
+      DISP.print(data);
     }
   }
 }
