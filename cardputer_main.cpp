@@ -396,6 +396,56 @@ void copy_menu_loop()
   }
 }
 
+void copy_main_contr_setup()
+{
+  cursor = 0;
+  rstOverride = true;
+  drawmenu(mainCtrM, copy_main_size);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void copy_main_contr_loop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % mmenu_size;
+    drawmenu(mainCtrM, copy_main_size);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = copyRContrM[cursor].command;
+  }
+}
+
+void copy_num_setup()
+{
+  cursor = 0;
+  rstOverride = true;
+  drawmenu(btnCtrM, copy_num_size);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void copy_num_loop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % mmenu_size;
+    drawmenu(btnCtrM, copy_num_size);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = btnCtrM[cursor].command;
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -440,7 +490,7 @@ void loop()
     case 6:
       enter_name_setup();
       break;
-      case 7:
+    case 7:
       copy_menu_setup();
       break;
     }
@@ -466,7 +516,7 @@ void loop()
   case 6:
     enter_name_loop();
     break;
-    case 7:
+  case 7:
     copy_menu_loop();
     break;
   }
