@@ -348,9 +348,19 @@ void enter_name_loop()
 
       if (status.enter)
       {
-        canvas.println(data);
-        canvas.pushSprite(4, 4);
-        data = "";
+        if (data.indexOf('/') != -1)
+        {
+          sdCard.createDir(SD, data);
+        }
+        else
+        {
+          sdCard.createDir(SD, "/" + data);
+        }
+
+        isSwitching = true;
+        current_proc = 7;
+
+        // data = "";
       }
 
       DISP.fillRect(25, DISP.height() - 48, DISP.width(), 25, BLACK);
@@ -358,6 +368,31 @@ void enter_name_loop()
       DISP.setCursor(25, DISP.height() - 48);
       DISP.print(data);
     }
+  }
+}
+
+void copy_menu_setup()
+{
+  cursor = 0;
+  rstOverride = true;
+  drawmenu(copyRContrM, copy_remote_size);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void copy_menu_loop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % mmenu_size;
+    drawmenu(copyRContrM, copy_remote_size);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = copyRContrM[cursor].command;
   }
 }
 
@@ -405,6 +440,9 @@ void loop()
     case 6:
       enter_name_setup();
       break;
+      case 7:
+      copy_menu_setup();
+      break;
     }
   }
 
@@ -427,6 +465,9 @@ void loop()
     break;
   case 6:
     enter_name_loop();
+    break;
+    case 7:
+    copy_menu_loop();
     break;
   }
 }
