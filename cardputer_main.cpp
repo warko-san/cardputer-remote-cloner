@@ -1,57 +1,77 @@
 #include "sd_card.h"
 #include "cardputer_main.h"
 
-void drawmenu(MENU thismenu[], int size) {
+void drawmenu(MENU thismenu[], int size)
+{
   DISP.setTextColor(FGCOLOR, BGCOLOR);
   DISP.setTextSize(SMALL_TEXT);
   DISP.fillScreen(BGCOLOR);
   DISP.setCursor(0, 5);
   // scrolling menu
-  if (cursor < 0) {
-    cursor = size - 1;  // rollover hack for up-arrow on cardputer
+  if (cursor < 0)
+  {
+    cursor = size - 1; // rollover hack for up-arrow on cardputer
   }
-  if (cursor > 5) {
-    for (int i = 0 + (cursor - 5); i < size; i++) {
+  if (cursor > 5)
+  {
+    for (int i = 0 + (cursor - 5); i < size; i++)
+    {
       DISP.print((cursor == i) ? ">" : " ");
       DISP.println(thismenu[i].name);
     }
-  } else {
+  }
+  else
+  {
     for (
-      int i = 0; i < size; i++) {
+        int i = 0; i < size; i++)
+    {
       DISP.print((cursor == i) ? ">" : " ");
       DISP.println(thismenu[i].name);
     }
   }
 }
 
-void drawmenu(MENU_IR thismenu[], int size) {
+void drawmenu(MENU_IR thismenu[], int size)
+{
   DISP.setTextSize(SMALL_TEXT);
   DISP.fillScreen(BGCOLOR);
   DISP.setCursor(0, 5);
   // scrolling menu
-  if (cursor < 0) {
-    cursor = size - 1;  // rollover hack for up-arrow on cardputer
+  if (cursor < 0)
+  {
+    cursor = size - 1; // rollover hack for up-arrow on cardputer
   }
-  if (cursor > 5) {
-    for (int i = 0 + (cursor - 5); i < size; i++) {
-      if (i == 0) {
+  if (cursor > 5)
+  {
+    for (int i = 0 + (cursor - 5); i < size; i++)
+    {
+      if (i == 0)
+      {
         DISP.setTextColor(FGCOLOR, BGCOLOR);
         DISP.print((cursor == i) ? ">" : " ");
         DISP.println(thismenu[i].name);
-      } else {
+      }
+      else
+      {
         DISP.setTextColor(WHITE, BGCOLOR);
         DISP.print((cursor == i) ? ">" : " ");
         DISP.print(F(" Command=0x"));
         DISP.println(thismenu[i].name);
       }
     }
-  } else {
-    for (int i = 0; i < size; i++) {
-      if (i == 0) {
+  }
+  else
+  {
+    for (int i = 0; i < size; i++)
+    {
+      if (i == 0)
+      {
         DISP.setTextColor(FGCOLOR, BGCOLOR);
         DISP.print((cursor == i) ? ">" : " ");
         DISP.println(thismenu[i].name);
-      } else {
+      }
+      else
+      {
         DISP.setTextColor(WHITE, BGCOLOR);
         DISP.print((cursor == i) ? ">" : " ");
         DISP.print(F(" Command=0x"));
@@ -61,32 +81,40 @@ void drawmenu(MENU_IR thismenu[], int size) {
   }
 }
 
-void switcher_button_proc() {
-  if (rstOverride == false) {
-    if (check_next_press()) {
+void switcher_button_proc()
+{
+  if (rstOverride == false)
+  {
+    if (check_next_press())
+    {
       isSwitching = true;
       current_proc = 1;
     }
   }
 }
 
-bool check_next_press() {
+bool check_next_press()
+{
   M5Cardputer.update();
-  if (M5Cardputer.Keyboard.isKeyPressed(';')) {
+  if (M5Cardputer.Keyboard.isKeyPressed(';'))
+  {
     // hack to handle the up arrow
     cursor = cursor - 2;
     return true;
   }
-  if (M5Cardputer.Keyboard.isKeyPressed(KEY_TAB) || M5Cardputer.Keyboard.isKeyPressed('.')) {
+  if (M5Cardputer.Keyboard.isKeyPressed(KEY_TAB) || M5Cardputer.Keyboard.isKeyPressed('.'))
+  {
     // dimtimer();
     return true;
   }
   return false;
 }
 
-bool check_select_press() {
+bool check_select_press()
+{
   M5Cardputer.update();
-  if (M5Cardputer.Keyboard.isKeyPressed(KEY_ENTER) || M5Cardputer.Keyboard.isKeyPressed('/')) {
+  if (M5Cardputer.Keyboard.isKeyPressed(KEY_ENTER) || M5Cardputer.Keyboard.isKeyPressed('/'))
+  {
     // dimtimer();
     return true;
   }
@@ -94,9 +122,11 @@ bool check_select_press() {
 }
 
 // Tap the power button from pretty much anywhere to get to the main menu
-void check_menu_press() {
+void check_menu_press()
+{
   M5Cardputer.update();
-  if (M5Cardputer.Keyboard.isKeyPressed(',') || M5Cardputer.Keyboard.isKeyPressed('`')) {
+  if (M5Cardputer.Keyboard.isKeyPressed(',') || M5Cardputer.Keyboard.isKeyPressed('`'))
+  {
     isSwitching = true;
     rstOverride = false;
     current_proc = 1;
@@ -104,28 +134,33 @@ void check_menu_press() {
   }
 }
 
-void mmenu_setup() {
+void mmenu_setup()
+{
   cursor = 0;
   rstOverride = true;
   drawmenu(mmenu, mmenu_size);
-  delay(500);  // Prevent switching after menu loads up
+  delay(500); // Prevent switching after menu loads up
 }
 
-void mmenu_loop() {
-  if (check_next_press()) {
+void mmenu_loop()
+{
+  if (check_next_press())
+  {
     cursor++;
     cursor = cursor % mmenu_size;
     drawmenu(mmenu, mmenu_size);
     delay(250);
   }
-  if (check_select_press()) {
+  if (check_select_press())
+  {
     rstOverride = false;
     isSwitching = true;
     current_proc = mmenu[cursor].command;
   }
 }
 
-void read_setup() {
+void read_setup()
+{
   cursor = 0;
   rstOverride = true;
   DISP.clearDisplay();
@@ -142,11 +177,13 @@ void read_setup() {
   printActiveIRProtocols(&Serial);
   Serial.println(F("at pin " STR(IR_RECEIVE_PIN)));
   IrReceiver.start();
-  delay(500);  // Prevent switching after menu loads up
+  delay(500); // Prevent switching after menu loads up
 }
 
-void read_loop() {
-  if (IrReceiver.decode()) {
+void read_loop()
+{
+  if (IrReceiver.decode())
+  {
     /*
      * Button is not pressed and data available -> store received data and resume
      */
@@ -158,42 +195,52 @@ void read_loop() {
     DISP.print("Command: 0x");
     DISP.println(IrReceiver.decodedIRData.command, HEX);
     storeCode();
-    IrReceiver.resume();  // resume receiver
+    IrReceiver.resume(); // resume receiver
   }
   delay(200);
 }
 
-void send_setup() {
+void send_setup()
+{
   IrReceiver.stop();
-  IrSender.begin();  // Start with IR_SEND_PIN as send pin and enable
+  IrSender.begin(); // Start with IR_SEND_PIN as send pin and enable
   cursor = 0;
   rstOverride = true;
   drawmenu(sendMenu, currentStoredCodes);
-  delay(500);  // Prevent switching after menu loads up
+  delay(500); // Prevent switching after menu loads up
 }
 
-void send_loop() {
-  if (check_next_press()) {
+void send_loop()
+{
+  if (check_next_press())
+  {
     cursor++;
     cursor = cursor % currentStoredCodes;
     drawmenu(sendMenu, currentStoredCodes);
     delay(250);
   }
-  if (check_select_press()) {
+  if (check_select_press())
+  {
     sendCode(&sendMenu[cursor].receivedIRData);
     delay(DELAY_BETWEEN_REPEAT);
   }
 }
 
 /// BATTERY INFO ///
-void battery_drawmenu(uint8_t battery) {
+void battery_drawmenu(uint8_t battery)
+{
   // Battery bar color definition
   uint16_t batteryBarColor = BLUE;
-  if (battery < 20) {
+  if (battery < 20)
+  {
     batteryBarColor = RED;
-  } else if (battery < 60) {
+  }
+  else if (battery < 60)
+  {
     batteryBarColor = ORANGE;
-  } else {
+  }
+  else
+  {
     batteryBarColor = GREEN;
   }
   // Battery bar
@@ -213,12 +260,13 @@ void battery_drawmenu(uint8_t battery) {
   DISP.setTextColor(FGCOLOR, BGCOLOR);
 }
 
-void battery_setup() {
+void battery_setup()
+{
   rstOverride = false;
   pinMode(VBAT_PIN, INPUT);
   uint8_t battery = ((((analogRead(VBAT_PIN)) - 1842) * 100) / 738);
   battery_drawmenu(battery);
-  delay(500);  // Prevent switching after menu loads up
+  delay(500); // Prevent switching after menu loads up
   /*
       Used minimum 3,0V and maximum 4,2V for battery. So it may show wrong values. Needs testing.
       It only shows decent values when disconnected from charger, due to HW limitations.
@@ -226,14 +274,17 @@ void battery_setup() {
     */
 }
 
-void battery_loop() {
+void battery_loop()
+{
   // Read 30 battery values to calculate the average (avoiding unprecise and close values)
   uint16_t batteryValues = 0;
-  for (uint8_t i = 0; i < 30; i++) {  // 30 iterations X 100ms = 3 seconds for each refresh
+  for (uint8_t i = 0; i < 30; i++)
+  { // 30 iterations X 100ms = 3 seconds for each refresh
     delay(100);
     batteryValues += ((((analogRead(VBAT_PIN)) - 1842) * 100) / 738);
     M5Cardputer.update();
-    if (M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed()) {  // If any key is pressed
+    if (M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed())
+    { // If any key is pressed
       rstOverride = false;
       isSwitching = true;
       current_proc = 1;
@@ -241,23 +292,87 @@ void battery_loop() {
     }
   }
 
-  if (!isSwitching) {                      // If is not switching, calculate battery average
-    uint8_t battery = batteryValues / 30;  // Iteration times
+  if (!isSwitching)
+  {                                       // If is not switching, calculate battery average
+    uint8_t battery = batteryValues / 30; // Iteration times
     Serial.printf("Battery Level: %d\n", battery);
-    if (battery != oldBattery) {  // Only draw a new screen if value is different
+    if (battery != oldBattery)
+    { // Only draw a new screen if value is different
       oldBattery = battery;
       battery_drawmenu(battery);
     }
   }
 }
 
-void settings_setup() {
+void settings_setup()
+{
 }
 
-void settings_loop() {
+void settings_loop()
+{
 }
 
-void setup() {
+M5Canvas canvas(&M5Cardputer.Display);
+String data = "> ";
+void enter_name_setup()
+{
+  DISP.setTextSize(0.5);
+  DISP.drawRect(0, 0, DISP.width(),
+                DISP.height() - 28, GREEN);
+  DISP.setFont(&fonts::FreeSerifBoldItalic18pt7b);
+
+  DISP.fillRect(0, DISP.height() - 4,
+                DISP.width(), 4, GREEN);
+
+  canvas.setFont(&fonts::FreeSerifBoldItalic18pt7b);
+  canvas.setTextSize(0.5);
+  canvas.createSprite(DISP.width() - 8,
+                      DISP.height() - 36);
+  canvas.setTextScroll(true);
+  canvas.println("Press Key and Enter to Input Text");
+  canvas.pushSprite(4, 4);
+  DISP.drawString(data, 4, DISP.height() - 24);
+}
+
+void enter_name_loop()
+{
+  M5Cardputer.update();
+  if (M5Cardputer.Keyboard.isChange())
+  {
+    if (M5Cardputer.Keyboard.isPressed())
+    {
+      Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
+
+      for (auto i : status.word)
+      {
+        data += i;
+      }
+
+      if (status.del)
+      {
+        data.remove(data.length() - 1);
+      }
+
+      if (status.enter)
+      {
+        data.remove(0, 2);
+        canvas.println(data);
+        canvas.pushSprite(4, 4);
+        data = "> ";
+      }
+
+      M5Cardputer.Display.fillRect(0, M5Cardputer.Display.height() - 28,
+                                   M5Cardputer.Display.width(), 25,
+                                   BLACK);
+
+      M5Cardputer.Display.drawString(data, 4,
+                                     M5Cardputer.Display.height() - 24);
+    }
+  }
+}
+
+void setup()
+{
   Serial.begin(115200);
 
   auto cfg = M5.config();
@@ -267,7 +382,8 @@ void setup() {
   sdCard.setupSdCard();
 }
 
-void loop() {
+void loop()
+{
   // This is the code to handle running the main loops
   // Background processes
   switcher_button_proc();
@@ -275,70 +391,84 @@ void loop() {
   check_menu_press();
 
   // Switcher
-  if (isSwitching) {
+  if (isSwitching)
+  {
     isSwitching = false;
     Serial.printf("Switching To Task: %d\n", current_proc);
-    switch (current_proc) {
-      case 1:
-        mmenu_setup();
-        break;
-      case 2:
-        read_setup();
-        break;
-      case 3:
-        send_setup();
-        break;
-      case 4:
-        settings_setup();
-        break;
-      case 5:
-        battery_setup();
-        break;
+    switch (current_proc)
+    {
+    case 1:
+      mmenu_setup();
+      break;
+    case 2:
+      read_setup();
+      break;
+    case 3:
+      send_setup();
+      break;
+    case 4:
+      settings_setup();
+      break;
+    case 5:
+      battery_setup();
+      break;
+    case 6:
+      enter_name_setup();
+      break;
     }
   }
 
-  switch (current_proc) {
-    case 1:
-      mmenu_loop();
-      break;
-    case 2:
-      read_loop();
-      break;
-    case 3:
-      send_loop();
-      break;
-    case 4:
-      settings_loop();
-      break;
-    case 5:
-      battery_loop();
-      break;
+  switch (current_proc)
+  {
+  case 1:
+    mmenu_loop();
+    break;
+  case 2:
+    read_loop();
+    break;
+  case 3:
+    send_loop();
+    break;
+  case 4:
+    settings_loop();
+    break;
+  case 5:
+    battery_loop();
+    break;
+  case 6:
+    enter_name_loop();
+    break;
   }
 }
 
 // Stores the code for later playback in sStoredIRData
 // Most of this code is just logging
-void storeCode() {
-  if (IrReceiver.decodedIRData.rawDataPtr->rawlen < 4) {
+void storeCode()
+{
+  if (IrReceiver.decodedIRData.rawDataPtr->rawlen < 4)
+  {
     Serial.print(F("Ignore data with rawlen="));
     Serial.println(IrReceiver.decodedIRData.rawDataPtr->rawlen);
     return;
   }
-  if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) {
+  if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT)
+  {
     Serial.println(F("Ignore repeat"));
     return;
   }
-  if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_AUTO_REPEAT) {
+  if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_AUTO_REPEAT)
+  {
     Serial.println(F("Ignore autorepeat"));
     return;
   }
-  if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_PARITY_FAILED) {
+  if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_PARITY_FAILED)
+  {
     Serial.println(F("Ignore parity error"));
     return;
   }
   /*
-     * Copy decoded data
-     */
+   * Copy decoded data
+   */
   sStoredIRData.receivedIRData = IrReceiver.decodedIRData;
 
   snprintf(sendMenu[currentStoredCodes].name, sizeof(sendMenu[currentStoredCodes].name), "%X", IrReceiver.decodedIRData.command);
@@ -353,26 +483,31 @@ void storeCode() {
   // DISP.print("Command: 0x");
   // DISP.println(IrReceiver.decodedIRData.command, HEX);
 
-  if (sStoredIRData.receivedIRData.protocol == UNKNOWN) {
+  if (sStoredIRData.receivedIRData.protocol == UNKNOWN)
+  {
     Serial.print(F("Received unknown code and store "));
     Serial.print(IrReceiver.decodedIRData.rawDataPtr->rawlen - 1);
     Serial.println(F(" timing entries as raw "));
-    IrReceiver.printIRResultRawFormatted(&Serial, true);  // Output the results in RAW format
+    IrReceiver.printIRResultRawFormatted(&Serial, true); // Output the results in RAW format
     sStoredIRData.rawCodeLength = IrReceiver.decodedIRData.rawDataPtr->rawlen - 1;
     /*
-         * Store the current raw data in a dedicated array for later usage
-         */
+     * Store the current raw data in a dedicated array for later usage
+     */
     IrReceiver.compensateAndStoreIRResultInArray(sStoredIRData.rawCode);
-  } else {
+  }
+  else
+  {
     IrReceiver.printIRResultShort(&Serial);
     IrReceiver.printIRSendUsage(&Serial);
-    sStoredIRData.receivedIRData.flags = 0;  // clear flags -esp. repeat- for later sending
+    sStoredIRData.receivedIRData.flags = 0; // clear flags -esp. repeat- for later sending
     Serial.println();
   }
 }
 
-void sendCode(IRData *aIRDataToSend) {
-  if (aIRDataToSend->protocol == UNKNOWN) return;
+void sendCode(IRData *aIRDataToSend)
+{
+  if (aIRDataToSend->protocol == UNKNOWN)
+    return;
   // if (aIRDataToSend->receivedIRData.protocol == UNKNOWN /* i.e. raw */) {
   //   // Assume 38 KHz
   //   IrSender.sendRaw(aIRDataToSend->rawCode, aIRDataToSend->rawCodeLength, 38);
@@ -389,8 +524,8 @@ void sendCode(IRData *aIRDataToSend) {
   //   printIRResultShort(&Serial, &aIRDataToSend->irDataArray[selectedSavedCode], false);
   // }
   /*
-         * Use the write function, which does the switch for different protocols
-         */
+   * Use the write function, which does the switch for different protocols
+   */
 
   IrSender.write(aIRDataToSend);
   printIRResultShort(&Serial, aIRDataToSend, false);
