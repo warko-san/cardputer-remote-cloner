@@ -170,18 +170,13 @@ void read_setup()
   DISP.setTextColor(FGCOLOR, BGCOLOR);
   DISP.setTextSize(SMALL_TEXT);
 
-  // Start the receiver and if not 3. parameter specified, take LED_BUILTIN pin from the internal boards definition as default feedback LED
-  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
-  Serial.print(F("Ready to receive IR signals of protocols: "));
-  printActiveIRProtocols(&Serial);
-  Serial.println(F("at pin " STR(IR_RECEIVE_PIN)));
-  IrReceiver.start();
+  ir_handler::ReadSetup();
   delay(500); // Prevent switching after menu loads up
 }
 
 void read_loop()
 {
-  if (IrReceiver.decode())
+  if (ir_handler::Decode())
   {
     /*
      * Button is not pressed and data available -> store received data and resume
@@ -194,15 +189,14 @@ void read_loop()
     DISP.print("Command: 0x");
     DISP.println(IrReceiver.decodedIRData.command, HEX);
     ir_handler::StoreCode();
-    IrReceiver.resume(); // resume receiver
+    ir_handler::Resume(); // resume receiver
   }
   delay(200);
 }
 
 void send_setup()
 {
-  IrReceiver.stop();
-  IrSender.begin(); // Start with IR_SEND_PIN as send pin and enable
+  ir_handler::ReadSetup();
   cursor = 0;
   rstOverride = true;
   drawmenu(ir_handler::sendMenu, ir_handler::currentStoredCodes);

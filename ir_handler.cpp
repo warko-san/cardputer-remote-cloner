@@ -12,6 +12,32 @@ namespace ir_handler
     uint8_t currentStoredCodes = 1;
     uint8_t selectedSavedCode = 0;
 
+    void ReadSetup()
+    {
+        // Start the receiver and if not 3. parameter specified, take LED_BUILTIN pin from the internal boards definition as default feedback LED
+        IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+        Serial.print(F("Ready to receive IR signals of protocols: "));
+        printActiveIRProtocols(&Serial);
+        Serial.println(F("at pin " STR(IR_RECEIVE_PIN)));
+        IrReceiver.start();
+    }
+
+    void SendSetup()
+    {
+        IrReceiver.stop();
+        IrSender.begin(); // Start with IR_SEND_PIN as send pin and enable
+    }
+
+    bool Decode()
+    {
+        return IrReceiver.decode();
+    }
+
+    void Resume()
+    {
+        IrReceiver.resume();
+    }
+
     // Stores the code for later playback in sStoredIRData
     // Most of this code is just logging
     void StoreCode()
@@ -45,14 +71,6 @@ namespace ir_handler
         snprintf(sendMenu[currentStoredCodes].name, sizeof(sendMenu[currentStoredCodes].name), "%X", IrReceiver.decodedIRData.command);
         sendMenu[currentStoredCodes].receivedIRData = IrReceiver.decodedIRData;
         currentStoredCodes++;
-
-        // DISP.setTextColor(FGCOLOR, BGCOLOR);
-        // DISP.setCursor(10, 50, 1);
-        // DISP.print("Address:");
-        // DISP.println(IrReceiver.decodedIRData.address, HEX);
-        // DISP.setCursor(10, 70, 1);
-        // DISP.print("Command: 0x");
-        // DISP.println(IrReceiver.decodedIRData.command, HEX);
 
         if (sStoredIRData.receivedIRData.protocol == UNKNOWN)
         {
