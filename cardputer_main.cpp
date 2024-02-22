@@ -489,6 +489,22 @@ void copy_misc_loop()
   }
 }
 
+void load_remote_setup()
+{
+}
+
+void load_remote_loop()
+{
+}
+
+void copy_key_setup()
+{
+}
+
+void copy_key_loop()
+{
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -536,6 +552,21 @@ void loop()
     case 7:
       copy_menu_setup();
       break;
+    case 8:
+      copy_main_contr_setup();
+      break;
+    case 9:
+      copy_num_setup();
+      break;
+    case 10:
+      copy_nav_setup();
+      break;
+    case 11:
+      copy_misc_setup();
+      break;
+    case 12:
+      load_remote_setup();
+      break;
     }
   }
 
@@ -561,6 +592,21 @@ void loop()
     break;
   case 7:
     copy_menu_loop();
+    break;
+  case 8:
+    copy_main_contr_loop();
+    break;
+  case 9:
+    copy_num_loop();
+    break;
+  case 10:
+    copy_nav_loop();
+    break;
+  case 11:
+    copy_misc_loop();
+    break;
+  case 12:
+    load_remote_loop();
     break;
   }
 }
