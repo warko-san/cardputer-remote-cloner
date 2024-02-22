@@ -31,7 +31,7 @@ void drawmenu(MENU thismenu[], int size)
   }
 }
 
-void drawmenu(MENU_IR thismenu[], int size)
+void drawmenu(MenuIr thismenu[], int size)
 {
   DISP.setTextSize(SMALL_TEXT);
   DISP.fillScreen(BGCOLOR);
@@ -194,7 +194,7 @@ void read_loop()
     DISP.setCursor(10, 70);
     DISP.print("Command: 0x");
     DISP.println(IrReceiver.decodedIRData.command, HEX);
-    storeCode();
+    StoreCode();
     IrReceiver.resume(); // resume receiver
   }
   delay(200);
@@ -221,7 +221,7 @@ void send_loop()
   }
   if (check_select_press())
   {
-    sendCode(&sendMenu[cursor].receivedIRData);
+    SendCode(&sendMenu[cursor].receivedIRData);
     delay(DELAY_BETWEEN_REPEAT);
   }
 }
@@ -570,7 +570,7 @@ void loop()
 
 // Stores the code for later playback in sStoredIRData
 // Most of this code is just logging
-void storeCode()
+void StoreCode()
 {
   if (IrReceiver.decodedIRData.rawDataPtr->rawlen < 4)
   {
@@ -631,7 +631,7 @@ void storeCode()
   }
 }
 
-void sendCode(IRData *aIRDataToSend)
+void SendCode(IRData *aIRDataToSend)
 {
   if (aIRDataToSend->protocol == UNKNOWN)
     return;
