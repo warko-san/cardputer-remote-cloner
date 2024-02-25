@@ -343,12 +343,12 @@ void enter_name_loop()
       {
         if (data.indexOf('/') != -1)
         {
-          sdCard.createDir(SD, data.c_str());
+          sdCard.createDir(data.c_str());
         }
         else
         {
           data = "/" + data;
-          sdCard.createDir(SD, (data).c_str());
+          sdCard.createDir((data).c_str());
         }
 
         isSwitching = true;
@@ -509,7 +509,7 @@ void copy_key_setup()
   case 8:
     if (!sdCard.exists((data + "/main_controls.txt").c_str()))
     {
-      sdCard.writeFile(SD, (data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
+      sdCard.writeFile((data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
     }
     break;
   }
@@ -519,12 +519,6 @@ void copy_key_setup()
 
 void copy_key_loop()
 {
-  uint64_t decodeTmr = 0;
-  if (decodeTmr - millis() >= 300)
-  {
-
-    decodeTmr = millis();
-  }
   if (ir_handler::Decode())
   {
     switch (saved_proc)
@@ -536,7 +530,7 @@ void copy_key_loop()
       std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
 
       ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile(SD, (data + "/main_controls.txt").c_str(), (address + addressVal + " " + command + commandVal).c_str());
+      sdCard.appendToFile((data + "/main_controls.txt").c_str(), (address + addressVal + " " + command + commandVal).c_str());
       break;
     }
     ir_handler::Resume(); // resume receiver

@@ -6,12 +6,12 @@ bool SDcard::exists(const char *path) {
   return SPIFFS.exists(path);
 }
 
-void SDcard::createDir(fs::FS &fs, const char *path)
+void SDcard::createDir(const char *path)
 {
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
   {
     Serial.printf("Creating Dir: %s\n", path);
-    if (fs.mkdir(path))
+    if (SD.mkdir(path))
     {
       Serial.println("Dir created");
     }
@@ -23,13 +23,13 @@ void SDcard::createDir(fs::FS &fs, const char *path)
   }
 }
 
-void SDcard::writeFile(fs::FS &fs, const char *path, const char *message)
+void SDcard::writeFile(const char *path, const char *message)
 {
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
   {
     Serial.printf("Writing file: %s\n", path);
 
-    File file = fs.open(path, FILE_WRITE);
+    File file = SD.open(path, FILE_WRITE);
     if (!file)
     {
       Serial.println("Failed to open file for writing");
@@ -49,11 +49,11 @@ void SDcard::writeFile(fs::FS &fs, const char *path, const char *message)
   }
 }
 
-void SDcard::appendToFile(fs::FS &fs, const char *path, const char *text)
+void SDcard::appendToFile(const char *path, const char *text)
 {
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
   {
-    File file = fs.open(path, FILE_APPEND);
+    File file = SD.open(path, FILE_APPEND);
     if (!file)
     {
       Serial.println("Failed to open file for appending");
