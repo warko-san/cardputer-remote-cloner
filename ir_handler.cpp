@@ -8,7 +8,7 @@ namespace ir_handler
 
     MenuIr sendMenu[52] = {
         {"Send signals:", sStoredIRData.receivedIRData}};
-
+        IRData mainControls[9] = {};
     uint8_t currentStoredCodes = 1;
     uint8_t selectedSavedCode = 0;
 

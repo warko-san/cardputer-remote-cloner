@@ -347,7 +347,8 @@ void enter_name_loop()
         }
         else
         {
-          sdCard.createDir(SD, ("/" + data).c_str());
+          data = "/" + data;
+          sdCard.createDir(SD, (data).c_str());
         }
 
         isSwitching = true;
@@ -391,7 +392,10 @@ void copy_menu_loop()
 
 void copy_main_contr_setup()
 {
-  cursor = 0;
+  if (saved_proc != 8)
+  {
+    cursor = 0;
+  }
   rstOverride = true;
   drawmenu(mainCtrM, copy_main_size);
   delay(500); // Prevent switching after menu loads up
@@ -408,9 +412,10 @@ void copy_main_contr_loop()
   }
   if (check_select_press())
   {
-    rstOverride = false;
+    rstOverride = true;
     isSwitching = true;
-    current_proc = copyRContrM[cursor].command;
+    saved_proc = current_proc;
+    current_proc = mainCtrM[cursor].command;
   }
 }
 
@@ -460,7 +465,7 @@ void copy_nav_loop()
   {
     rstOverride = false;
     isSwitching = true;
-    current_proc = btnCtrM[cursor].command;
+    current_proc = navCtrM[cursor].command;
   }
 }
 
@@ -485,7 +490,7 @@ void copy_misc_loop()
   {
     rstOverride = false;
     isSwitching = true;
-    current_proc = btnCtrM[cursor].command;
+    current_proc = miscCtrM[cursor].command;
   }
 }
 
@@ -499,10 +504,59 @@ void load_remote_loop()
 
 void copy_key_setup()
 {
+  switch (saved_proc)
+  {
+  case 8:
+    sdCard.writeFile(SD, (data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
+    break;
+  }
+  ir_handler::ReadSetup();
+  delay(200);
 }
+#include <sstream>
+#include <string>
+#include <iostream>
+#include <cstring>
 
 void copy_key_loop()
 {
+  uint64_t decodeTmr = 0;
+  if (decodeTmr - millis() >= 300)
+  {
+    
+    decodeTmr = millis();
+  }
+  if (ir_handler::Decode())
+    {
+      switch (saved_proc)
+      {
+      case 8:
+        std::string address = "Address 0x";
+        std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
+        std::string command = "Command 0x";
+        std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
+
+        ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
+        sdCard.appendToFile(SD, (data + "/main_controls.txt").c_str(), (address + addressVal + " " + command + commandVal).c_str());
+        break;
+      }
+      ir_handler::Resume(); // resume receiver
+    }
+
+  uint64_t checkPressTmr = 0;
+  if (checkPressTmr - millis() >= 200)
+  {
+    
+    checkPressTmr = millis();
+  }
+  if (check_select_press())
+    {
+      // rstOverride = false;
+      isSwitching = true;
+      Serial.printf("About to switch to saved Task: %d\n", saved_proc);
+      current_proc = saved_proc;
+      Serial.printf("Now curr task Task: %d\n", saved_proc);
+    }
 }
 
 void setup()
@@ -567,6 +621,9 @@ void loop()
     case 12:
       load_remote_setup();
       break;
+    case 13:
+      copy_key_setup();
+      break;
     }
   }
 
@@ -607,6 +664,9 @@ void loop()
     break;
   case 12:
     load_remote_loop();
+    break;
+  case 13:
+    copy_key_loop();
     break;
   }
 }
