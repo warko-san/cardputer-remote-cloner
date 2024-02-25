@@ -2,6 +2,10 @@
 
 SDcard::SDcard() {}
 
+bool SDcard::exists(const char *path) {
+  return SPIFFS.exists(path);
+}
+
 void SDcard::createDir(fs::FS &fs, const char *path)
 {
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
@@ -57,6 +61,7 @@ void SDcard::appendToFile(fs::FS &fs, const char *path, const char *text)
       return;
     }
     Serial.printf("Appending text '%s' to file: %s\n", text, path);
+    file.println();
     if (file.println(text))
     {
       Serial.println("Text appended");

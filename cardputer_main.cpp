@@ -507,56 +507,50 @@ void copy_key_setup()
   switch (saved_proc)
   {
   case 8:
-    sdCard.writeFile(SD, (data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
+    if (!sdCard.exists((data + "/main_controls.txt").c_str()))
+    {
+      sdCard.writeFile(SD, (data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
+    }
     break;
   }
   ir_handler::ReadSetup();
   delay(200);
 }
-#include <sstream>
-#include <string>
-#include <iostream>
-#include <cstring>
 
 void copy_key_loop()
 {
   uint64_t decodeTmr = 0;
   if (decodeTmr - millis() >= 300)
   {
-    
+
     decodeTmr = millis();
   }
   if (ir_handler::Decode())
-    {
-      switch (saved_proc)
-      {
-      case 8:
-        std::string address = "Address 0x";
-        std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
-        std::string command = "Command 0x";
-        std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
-
-        ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
-        sdCard.appendToFile(SD, (data + "/main_controls.txt").c_str(), (address + addressVal + " " + command + commandVal).c_str());
-        break;
-      }
-      ir_handler::Resume(); // resume receiver
-    }
-
-  uint64_t checkPressTmr = 0;
-  if (checkPressTmr - millis() >= 200)
   {
-    
-    checkPressTmr = millis();
-  }
-  if (check_select_press())
+    switch (saved_proc)
     {
-      // rstOverride = false;
-      isSwitching = true;
-      Serial.printf("About to switch to saved Task: %d\n", saved_proc);
-      current_proc = saved_proc;
-      Serial.printf("Now curr task Task: %d\n", saved_proc);
+    case 8:
+      std::string address = "Address 0x";
+      std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
+      std::string command = "Command 0x";
+      std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
+
+      ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
+      sdCard.appendToFile(SD, (data + "/main_controls.txt").c_str(), (address + addressVal + " " + command + commandVal).c_str());
+      break;
     }
+    ir_handler::Resume(); // resume receiver
+    delay(200);
+  }
+
+  if (check_select_press())
+  {
+    // rstOverride = false;
+    isSwitching = true;
+    Serial.printf("About to switch to saved Task: %d\n", saved_proc);
+    current_proc = saved_proc;
+    Serial.printf("Now curr task Task: %d\n", saved_proc);
+  }
 }
 
 void setup()
