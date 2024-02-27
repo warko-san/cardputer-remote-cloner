@@ -166,7 +166,7 @@ void check_menu_press()
 void mmenu_setup()
 {
   cursor = 0;
-  rstOverride = true;
+//  rstOverride = true;
   drawmenu(mmenu, mmenu_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -191,7 +191,7 @@ void mmenu_loop()
 void read_setup()
 {
   cursor = 0;
-  rstOverride = true;
+ // rstOverride = true;
   DISP.clearDisplay();
   DISP.setTextColor(WHITE);
   DISP.setTextSize(MEDIUM_TEXT);
@@ -228,7 +228,7 @@ void send_setup()
 {
   ir_handler::SendSetup();
   cursor = 0;
-  rstOverride = true;
+ // rstOverride = true;
   drawmenu(ir_handler::sendMenu, ir_handler::currentStoredCodes);
   delay(500); // Prevent switching after menu loads up
 }
@@ -395,7 +395,7 @@ void enter_name_loop()
 void copy_menu_setup()
 {
   cursor = 0;
-  rstOverride = true;
+ // rstOverride = true;
   drawmenu(copyRContrM, copy_remote_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -414,16 +414,15 @@ void copy_menu_loop()
     rstOverride = false;
     isSwitching = true;
     current_proc = copyRContrM[cursor].command;
+    saved_proc = current_proc;
+    Serial.printf("NOW SAVED is Task: %d\n", saved_proc);
   }
 }
 
 void copy_main_contr_setup()
 {
-  if (saved_proc != 8)
-  {
-    cursor = 0;
-  }
-  rstOverride = true;
+  cursor = 0;
+//  rstOverride = true;
   drawmenu(mainCtrM, copy_main_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -439,9 +438,9 @@ void copy_main_contr_loop()
   }
   if (check_select_press())
   {
-    rstOverride = true;
+   // rstOverride = true;
     isSwitching = true;
-    saved_proc = current_proc;
+    
     current_proc = mainCtrM[cursor].command;
   }
 }
@@ -449,7 +448,7 @@ void copy_main_contr_loop()
 void copy_num_setup()
 {
   cursor = 0;
-  rstOverride = true;
+ // rstOverride = true;
   drawmenu(btnCtrM, copy_num_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -474,7 +473,7 @@ void copy_num_loop()
 void copy_nav_setup()
 {
   cursor = 0;
-  rstOverride = true;
+ // rstOverride = true;
   drawmenu(navCtrM, copy_nav_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -499,7 +498,7 @@ void copy_nav_loop()
 void copy_misc_setup()
 {
   cursor = 0;
-  rstOverride = true;
+//  rstOverride = true;
   drawmenu(miscCtrM, copy_misc_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -553,6 +552,7 @@ void load_remote_loop()
 
 void copy_key_setup()
 {
+  Serial.printf("NOW SAVED is Task: %d\n", saved_proc);
   switch (saved_proc)
   {
   case 8:
@@ -561,22 +561,22 @@ void copy_key_setup()
       sdCard.writeFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
     }
     break;
-    case 9:
+  case 9:
     if (!sdCard.exists((sdCard.rootDir + data + "/num_controls.txt").c_str()))
     {
       sdCard.writeFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), "----- Here's the num controls -----");
     }
     break;
-    case 10:
+  case 10:
     if (!sdCard.exists((sdCard.rootDir + data + "/nav_controls.txt").c_str()))
     {
       sdCard.writeFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), "----- Here's the nav controls -----");
     }
     break;
-    case 11:
+  case 11:
     if (!sdCard.exists((sdCard.rootDir + data + "/misc_controls.txt").c_str()))
     {
-      sdCard.writeFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), "----- Here's the num controls -----");
+      sdCard.writeFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), "----- Here's the misc controls -----");
     }
     break;
   }
@@ -586,61 +586,7 @@ void copy_key_setup()
 
 void copy_key_loop()
 {
-  std::string address = "Address ";
-  std::string command = "Command ";
-
-  if (ir_handler::Decode())
-  {
-    std::stringstream ss;
-      ss << "0x"
-         << std::setfill('0') << std::setw(4) // Ensure 4 characters for uint16_t
-         << std::hex << IrReceiver.decodedIRData.address;
-std::string addrHex = ss.str();
-std::stringstream ss1;
-      ss1 << "0x"
-          << std::setfill('0') << std::setw(2) // Ensure 4 characters for uint16_t
-          << std::hex << IrReceiver.decodedIRData.command;
-      std::string commHex = ss1.str();
-
-    switch (saved_proc)
-    {
-    case 8:
-      // std::string address = "Address ";
-      // std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
-      // std::string command = "Command ";
-      // std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
-
-      ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
-      break;
-    case 9:
-      
-      // std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
-      
-      // std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
-
-      // uint16_t value = 0xABCD; // Example value
-
-      // std::stringstream ss;
-      // ss << "0x"
-      //    << std::setfill('0') << std::setw(4) // Ensure 4 characters for uint16_t
-      //    << std::hex << IrReceiver.decodedIRData.address;
-
-      // std::string addrHex = ss.str();
-      // std::stringstream ss1;
-      // ss1 << "0x"
-      //     << std::setfill('0') << std::setw(2) // Ensure 4 characters for uint16_t
-      //     << std::hex << IrReceiver.decodedIRData.command;
-      // std::string commHex = ss1.str();
-
-      ir_handler::numControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
-      break;
-    }
-    delay(200);
-    ir_handler::Resume(); // resume receiver
-  }
-
+  Serial.printf("NOW SAVED is Task: %d\n", saved_proc);
   if (check_select_press())
   {
     // rstOverride = false;
@@ -659,18 +605,79 @@ std::stringstream ss1;
       cursor = cursor % copy_main_size;
       drawmenu(mainCtrM, copy_main_size);
       break;
+    case 9:
+      cursor = cursor % copy_num_size;
+      drawmenu(btnCtrM, copy_num_size);
+      break;
+    case 10:
+      cursor = cursor % copy_nav_size;
+      drawmenu(navCtrM, copy_nav_size);
+      break;
+    case 11:
+      cursor = cursor % copy_misc_size;
+      drawmenu(miscCtrM, copy_misc_size);
+      break;
 
     default:
       break;
     }
     delay(250);
   }
+
+  std::string address = "Address ";
+  std::string command = "Command ";
+ // auto lastDecodedData = IrReceiver.decodedIRData;
+  if (ir_handler::Decode())
+  {
+    // if (lastDecodedData.protocol == UNKNOWN)
+    //   return;
+    // if (lastDecodedData.command == IrReceiver.decodedIRData.command)
+    //   return;
+    std::stringstream ss;
+    ss << "0x"
+       << std::setfill('0') << std::setw(4) // Ensure 4 characters for uint16_t
+       << std::hex << IrReceiver.decodedIRData.address;
+    std::string addrHex = ss.str();
+    std::stringstream ss1;
+    ss1 << "0x"
+        << std::setfill('0') << std::setw(2) // Ensure 4 characters for uint16_t
+        << std::hex << IrReceiver.decodedIRData.command;
+    std::string commHex = ss1.str();
+
+    switch (saved_proc)
+    {
+    case 8:
+      // std::string address = "Address ";
+      // std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
+      // std::string command = "Command ";
+      // std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
+
+      ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
+      sdCard.appendToFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      break;
+    case 9:
+      ir_handler::numControls[cursor] = IrReceiver.decodedIRData;
+      sdCard.appendToFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      break;
+    case 10:
+      ir_handler::navControls[cursor] = IrReceiver.decodedIRData;
+      sdCard.appendToFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      break;
+    case 11:
+      ir_handler::miscControls[cursor] = IrReceiver.decodedIRData;
+      sdCard.appendToFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      break;
+    }
+    // lastDecodedData = IrReceiver.decodedIRData;
+    delay(300);
+    ir_handler::Resume(); // resume receiver
+  }
 }
 
 void loadRemoteLogicSetup()
 {
   cursor = 0;
-  rstOverride = true;
+ // rstOverride = true;
   // LOAD REMOTE DATA FROM FILE
   current_proc = 15;
   delay(500); // Prevent switching after menu loads up
@@ -745,7 +752,7 @@ void sendControlLoop()
 void sendMenuSetup()
 {
   cursor = 0;
-  rstOverride = true;
+//  rstOverride = true;
   drawmenu(mainCtrMSend, sendMainSize);
   delay(500); // Prevent switching after menu loads up
 }
@@ -783,7 +790,7 @@ void loop()
 {
   // This is the code to handle running the main loops
   // Background processes
-  switcher_button_proc();
+//  switcher_button_proc();
   // screen_dim_proc();
   check_menu_press();
 
