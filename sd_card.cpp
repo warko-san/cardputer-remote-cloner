@@ -9,6 +9,9 @@ bool SDcard::exists(const char *path) {
 }
 
 String* SDcard::listDir(const char * dirname){
+  for(int i = 0; i < 42; ++i) {
+    dirs[i] = "";
+}
     Serial.printf("Listing directory: %s\n", dirname);
 
     File root = SD.open(dirname);
@@ -66,6 +69,22 @@ void SDcard::readFile(const char * path){
     Serial.print("Read from file: ");
     while(file.available()){
         Serial.write(file.read());
+    }
+    while (file.available()) {
+        String line = file.readStringUntil('\n');
+        IRData irData;
+        uint8_t position = 0;
+        if (sscanf(line.c_str(), "Address 0x%hx Command 0x%hx", &irData.address, &irData.command) == 2) {
+            // Successfully parsed the address and command
+            Serial.print("Address: 0x");
+            Serial.print(irData.address, HEX);
+            Serial.print(", Command: 0x");
+            Serial.println(irData.command, HEX);
+            // You can now store `irData` in an array or process it as needed
+            ir_handler::mainControls[position++] = irData;
+        } else {
+            Serial.println("Failed to parse line");
+        }
     }
     file.close();
     xSemaphoreGive(sdcardSemaphore);

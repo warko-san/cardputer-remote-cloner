@@ -166,7 +166,7 @@ void check_menu_press()
 void mmenu_setup()
 {
   cursor = 0;
-//  rstOverride = true;
+  //  rstOverride = true;
   drawmenu(mmenu, mmenu_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -191,7 +191,7 @@ void mmenu_loop()
 void read_setup()
 {
   cursor = 0;
- // rstOverride = true;
+  // rstOverride = true;
   DISP.clearDisplay();
   DISP.setTextColor(WHITE);
   DISP.setTextSize(MEDIUM_TEXT);
@@ -228,7 +228,7 @@ void send_setup()
 {
   ir_handler::SendSetup();
   cursor = 0;
- // rstOverride = true;
+  // rstOverride = true;
   drawmenu(ir_handler::sendMenu, ir_handler::currentStoredCodes);
   delay(500); // Prevent switching after menu loads up
 }
@@ -395,7 +395,7 @@ void enter_name_loop()
 void copy_menu_setup()
 {
   cursor = 0;
- // rstOverride = true;
+  // rstOverride = true;
   drawmenu(copyRContrM, copy_remote_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -422,7 +422,7 @@ void copy_menu_loop()
 void copy_main_contr_setup()
 {
   cursor = 0;
-//  rstOverride = true;
+  //  rstOverride = true;
   drawmenu(mainCtrM, copy_main_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -438,9 +438,9 @@ void copy_main_contr_loop()
   }
   if (check_select_press())
   {
-   // rstOverride = true;
+    // rstOverride = true;
     isSwitching = true;
-    
+
     current_proc = mainCtrM[cursor].command;
   }
 }
@@ -448,7 +448,7 @@ void copy_main_contr_loop()
 void copy_num_setup()
 {
   cursor = 0;
- // rstOverride = true;
+  // rstOverride = true;
   drawmenu(btnCtrM, copy_num_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -473,7 +473,7 @@ void copy_num_loop()
 void copy_nav_setup()
 {
   cursor = 0;
- // rstOverride = true;
+  // rstOverride = true;
   drawmenu(navCtrM, copy_nav_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -498,7 +498,7 @@ void copy_nav_loop()
 void copy_misc_setup()
 {
   cursor = 0;
-//  rstOverride = true;
+  //  rstOverride = true;
   drawmenu(miscCtrM, copy_misc_size);
   delay(500); // Prevent switching after menu loads up
 }
@@ -624,7 +624,7 @@ void copy_key_loop()
 
   std::string address = "Address ";
   std::string command = "Command ";
- // auto lastDecodedData = IrReceiver.decodedIRData;
+  // auto lastDecodedData = IrReceiver.decodedIRData;
   if (ir_handler::Decode())
   {
     // if (lastDecodedData.protocol == UNKNOWN)
@@ -672,17 +672,19 @@ void copy_key_loop()
   }
 }
 
-void loadRemoteLogicSetup()
+void loadRemoteSetup()
 {
-//  cursor = 0;
- // rstOverride = true;
+  //  cursor = 0;
+  // rstOverride = true;
   // LOAD REMOTE DATA FROM FILE
+  sdCard.readFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str());
   delay(100);
+  isSwitching = true;
   current_proc = 15;
   delay(500); // Prevent switching after menu loads up
 }
 
-void loadRemoteLogicLoop()
+void loadRemoteLoop()
 {
   // if (check_next_press())
   // {
@@ -751,8 +753,8 @@ void sendControlLoop()
 void sendMenuSetup()
 {
   cursor = 0;
-//  rstOverride = true;
-  drawmenu(mainCtrMSend, sendMainSize);
+  //  rstOverride = true;
+  drawmenu(sendRContrM, send_remote_size);
   delay(500); // Prevent switching after menu loads up
 }
 
@@ -761,8 +763,8 @@ void sendMenuLoop()
   if (check_next_press())
   {
     cursor++;
-    cursor = cursor % sendMainSize;
-    drawmenu(mainCtrMSend, sendMainSize);
+    cursor = cursor % send_remote_size;
+    drawmenu(sendRContrM, send_remote_size);
     delay(250);
   }
   if (check_select_press())
@@ -770,7 +772,7 @@ void sendMenuLoop()
     rstOverride = false;
     isSwitching = true;
     saved_proc = current_proc;
-    current_proc = mainCtrMSend[cursor].command;
+    current_proc = sendRContrM[cursor].command;
   }
 }
 
@@ -789,7 +791,7 @@ void loop()
 {
   // This is the code to handle running the main loops
   // Background processes
-//  switcher_button_proc();
+  //  switcher_button_proc();
   // screen_dim_proc();
   check_menu_press();
 
@@ -839,6 +841,12 @@ void loop()
     case 13:
       copy_key_setup();
       break;
+    case 14:
+      loadRemoteSetup();
+      break;
+    case 15:
+      sendMenuSetup();
+      break;
     }
   }
 
@@ -882,6 +890,12 @@ void loop()
     break;
   case 13:
     copy_key_loop();
+    break;
+  case 14:
+    loadRemoteLoop();
+    break;
+  case 15:
+    sendMenuLoop();
     break;
   }
 }

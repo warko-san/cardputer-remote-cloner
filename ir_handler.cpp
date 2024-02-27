@@ -13,6 +13,7 @@ namespace ir_handler
     IRData numControls[10] = {};
     IRData navControls[7] = {};
     IRData miscControls[2] = {};
+    IRData sIRData;
 
     uint8_t currentStoredCodes = 1;
     uint8_t selectedSavedCode = 0;
