@@ -80,6 +80,36 @@ void drawmenu(ir_handler::MenuIr thismenu[], int size)
   }
 }
 
+void drawmenu(String thismenu[], int size)
+{
+  DISP.setTextColor(FGCOLOR, BGCOLOR);
+  DISP.setTextSize(SMALL_TEXT);
+  DISP.fillScreen(BGCOLOR);
+  DISP.setCursor(0, 5);
+  // scrolling menu
+  if (cursor < 0)
+  {
+    cursor = size - 1; // rollover hack for up-arrow on cardputer
+  }
+  if (cursor > 5)
+  {
+    for (int i = 0 + (cursor - 5); i < size; i++)
+    {
+      DISP.print((cursor == i) ? ">" : " ");
+      DISP.println(thismenu[i]);
+    }
+  }
+  else
+  {
+    for (
+        int i = 0; i < size; i++)
+    {
+      DISP.print((cursor == i) ? ">" : " ");
+      DISP.println(thismenu[i]);
+    }
+  }
+}
+
 void switcher_button_proc()
 {
   if (rstOverride == false)
@@ -196,7 +226,7 @@ void read_loop()
 
 void send_setup()
 {
-  ir_handler::ReadSetup();
+  ir_handler::SendSetup();
   cursor = 0;
   rstOverride = true;
   drawmenu(ir_handler::sendMenu, ir_handler::currentStoredCodes);
@@ -491,12 +521,34 @@ void copy_misc_loop()
   }
 }
 
+uint8_t loadedSize = 0;
+
 void load_remote_setup()
 {
+  cursor = 0;
+  sdCard.listDir(sdCard.rootDir.c_str());
+  auto loadedDirs = sdCard.dirs;
+  loadedSize = sizeof(loadedDirs) / sizeof(String);
+  drawmenu(loadedDirs, loadedSize);
+  delay(500); // Prevent switching after menu loads up
 }
 
 void load_remote_loop()
 {
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % loadedSize;
+    drawmenu(sdCard.dirs, loadedSize);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    loadedDir = sdCard.dirs[cursor];
+    current_proc = 14;
+  }
 }
 
 void copy_key_setup()
@@ -551,6 +603,81 @@ void copy_key_loop()
     current_proc = saved_proc;
     Serial.printf("Now curr task Task: %d\n", saved_proc);
   }
+}
+
+void loadRemoteLogicSetup()
+{
+  cursor = 0;
+  rstOverride = true;
+  // LOAD REMOTE DATA FROM FILE
+  current_proc = 15;
+  delay(500); // Prevent switching after menu loads up
+}
+
+void loadRemoteLogicLoop()
+{
+  // if (check_next_press())
+  // {
+  //   cursor++;
+  //   cursor = cursor % ir_handler::currentStoredCodes;
+  //   drawmenu(ir_handler::sendMenu, ir_handler::currentStoredCodes);
+  //   delay(250);
+  // }
+  // if (check_select_press())
+  // {
+  //   ir_handler::SendCode(&ir_handler::sendMenu[cursor].receivedIRData);
+  //   delay(DELAY_BETWEEN_REPEAT);
+  // }
+}
+
+void sendControlSetup()
+{
+  ir_handler::SendSetup();
+}
+
+void sendControlLoop()
+{
+  if (check_select_press())
+  {
+    switch (saved_proc)
+    {
+    case 16:
+      ir_handler::SendCode(&ir_handler::mainControls[cursor]);
+      delay(DELAY_BETWEEN_REPEAT);
+      break;
+      case 17:
+      ir_handler::SendCode(&ir_handler::numControls[cursor]);
+      delay(DELAY_BETWEEN_REPEAT);
+      break;
+      case 18:
+      ir_handler::SendCode(&ir_handler::navControls[cursor]);
+      delay(DELAY_BETWEEN_REPEAT);
+      break;
+      case 19:
+      ir_handler::SendCode(&ir_handler::miscControls[cursor]);
+      delay(DELAY_BETWEEN_REPEAT);
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % sendMainSize;
+    drawmenu(mainCtrMSend, sendMainSize);
+    delay(250);
+  }
+}
+
+void sendMenuSetup() {
+
+}
+
+void sendMenuLoop() {
+
 }
 
 void setup()
