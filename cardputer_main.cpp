@@ -622,6 +622,7 @@ void copy_key_loop()
     delay(250);
   }
 
+std::string protocol = "Protocol ";
   std::string address = "Address ";
   std::string command = "Command ";
   // auto lastDecodedData = IrReceiver.decodedIRData;
@@ -641,6 +642,9 @@ void copy_key_loop()
         << std::setfill('0') << std::setw(2) // Ensure 4 characters for uint16_t
         << std::hex << IrReceiver.decodedIRData.command;
     std::string commHex = ss1.str();
+    int protocolValue = ((int)IrReceiver.decodedIRData.protocol);
+    std::string myString = std::to_string(protocolValue);
+const char* protocolString = myString.c_str();
 
     switch (saved_proc)
     {
@@ -651,19 +655,19 @@ void copy_key_loop()
       // std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
 
       ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
       break;
     case 9:
       ir_handler::numControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
       break;
     case 10:
       ir_handler::navControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
       break;
     case 11:
       ir_handler::miscControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
       break;
     }
     // lastDecodedData = IrReceiver.decodedIRData;
@@ -703,10 +707,23 @@ void loadRemoteLoop()
 void sendControlSetup()
 {
   ir_handler::SendSetup();
+  Serial.printf("SSAved Task: %d\n", saved_proc);
 }
 
 void sendControlLoop()
 {
+  if (check_next_press())
+  {
+    cursor++;
+    switch (saved_proc)
+    {
+    case 16:
+      cursor = cursor % sendMainSize;
+      drawmenu(mainCtrMSend, sendMainSize);
+      break;
+    }
+    delay(250);
+  }
   if (check_select_press())
   {
     switch (saved_proc)
@@ -727,26 +744,7 @@ void sendControlLoop()
       ir_handler::SendCode(&ir_handler::miscControls[cursor]);
       delay(DELAY_BETWEEN_REPEAT);
       break;
-
-    default:
-      break;
     }
-  }
-
-  if (check_next_press())
-  {
-    cursor++;
-    switch (saved_proc)
-    {
-    case 16:
-      cursor = cursor % sendMainSize;
-      drawmenu(mainCtrMSend, sendMainSize);
-      break;
-
-    default:
-      break;
-    }
-    delay(250);
   }
 }
 
@@ -771,8 +769,33 @@ void sendMenuLoop()
   {
     rstOverride = false;
     isSwitching = true;
-    saved_proc = current_proc;
     current_proc = sendRContrM[cursor].command;
+    saved_proc = current_proc;
+  }
+}
+
+void sendMainCtrlSetup()
+{
+  cursor = 0;
+  //  rstOverride = true;
+  drawmenu(mainCtrMSend, sendMainSize);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void sendMainCtrlLoop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % sendMainSize;
+    drawmenu(mainCtrMSend, sendMainSize);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = mainCtrMSend[cursor].command;
   }
 }
 
@@ -847,6 +870,12 @@ void loop()
     case 15:
       sendMenuSetup();
       break;
+    case 16:
+      sendMainCtrlSetup();
+      break;
+    case 20:
+      sendControlSetup();
+      break;
     }
   }
 
@@ -896,6 +925,12 @@ void loop()
     break;
   case 15:
     sendMenuLoop();
+    break;
+  case 16:
+    sendMainCtrlLoop();
+    break;
+  case 20:
+    sendControlLoop();
     break;
   }
 }
