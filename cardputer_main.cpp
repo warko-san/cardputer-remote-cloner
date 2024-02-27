@@ -305,7 +305,6 @@ void settings_loop()
 {
 }
 
-M5Canvas canvas(&M5Cardputer.Display);
 String data = "";
 
 void enter_name_setup()
@@ -343,18 +342,16 @@ void enter_name_loop()
       {
         if (data.indexOf('/') != -1)
         {
-          sdCard.createDir(data.c_str());
+          sdCard.createDir((sdCard.rootDir + data).c_str());
         }
         else
         {
           data = "/" + data;
-          sdCard.createDir((data).c_str());
+          sdCard.createDir((sdCard.rootDir + data).c_str());
         }
 
         isSwitching = true;
         current_proc = 7;
-
-        // data = "";
       }
 
       DISP.fillRect(25, DISP.height() - 48, DISP.width(), 25, BLACK);
@@ -528,6 +525,15 @@ void copy_key_loop()
       std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
       std::string command = "Command 0x";
       std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
+
+      // uint16_t value = 0xABCD; // Example value
+
+      // std::stringstream ss;
+      // ss << "0x"
+      //    << std::setfill('0') << std::setw(4) // Ensure 4 characters for uint16_t
+      //    << std::hex << value;
+
+      // std::string hexStr = ss.str(); // "0xABCD"
 
       ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
       sdCard.appendToFile((data + "/main_controls.txt").c_str(), (address + addressVal + " " + command + commandVal).c_str());

@@ -2,8 +2,36 @@
 
 SDcard::SDcard() {}
 
+extern SDcard sdCard;
+
 bool SDcard::exists(const char *path) {
   return SPIFFS.exists(path);
+}
+
+String* SDcard::listDir(const char * dirname){
+    Serial.printf("Listing directory: %s\n", dirname);
+
+    File root = SD.open(dirname);
+    if(!root){
+      Serial.println("Failed to open directory");
+      return dirs;
+    }
+    if(!root.isDirectory()){
+      Serial.println("Not a directory");
+      return dirs;
+    }
+
+    File file = root.openNextFile();
+    while(file){
+      if(file.isDirectory()){
+        Serial.print("  DIR : ");
+        Serial.println(file.name());
+        dirs[dirCount++] = file.name();
+      }
+      file = root.openNextFile();
+    }
+
+    return dirs;
 }
 
 void SDcard::createDir(const char *path)
@@ -123,6 +151,10 @@ bool SDcard::setupSdCard()
     uint64_t cardSize = SD.cardSize() / (1024 * 1024);
     DISP.printf("SD Card Size: %lluMB\n", cardSize);
     Serial.printf("SD Card Size: %lluMB\n", cardSize);
+
+    if (!exists(rootDir.c_str())) {
+      createDir(rootDir.c_str());
+    }
     return true;
   }
   return false;
