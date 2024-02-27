@@ -91,6 +91,32 @@ void SDcard::readFile(const char * path){
   }
 }
 
+void SDcard::readFileIrData(const char * path, IRData* dataArray, int maxDataCount){
+  if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
+  {
+    Serial.printf("Reading file: %s\n", path);
+
+    File file = SD.open(path);
+    if(!file){
+        Serial.println("Failed to open file for reading");
+        xSemaphoreGive(sdcardSemaphore);
+        return;
+    }
+
+    Serial.print("Read from file: ");
+    // while(file.available()){
+    //     Serial.write(file.read());
+    // }
+    int count = 0;
+    while (file.available() && count < maxDataCount) {
+        file.read((uint8_t*)&dataArray[count], sizeof(IRData));
+        count++;
+    }
+    file.close();
+    xSemaphoreGive(sdcardSemaphore);
+  }
+}
+
 void SDcard::writeFile(const char *path, const char *message)
 {
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
@@ -111,6 +137,23 @@ void SDcard::writeFile(const char *path, const char *message)
     else
     {
       Serial.println("Write failed");
+    }
+    file.close();
+    xSemaphoreGive(sdcardSemaphore);
+  }
+}
+
+void SDcard::createFile(const char *path)
+{
+  if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
+  {
+    Serial.printf("Creating file: %s\n", path);
+    File file = SD.open(path, FILE_WRITE);
+    if (!file)
+    {
+      Serial.println("Failed to create file");
+      xSemaphoreGive(sdcardSemaphore);
+      return;
     }
     file.close();
     xSemaphoreGive(sdcardSemaphore);
@@ -141,6 +184,31 @@ void SDcard::appendToFile(const char *path, const char *text)
     file.close();
     xSemaphoreGive(sdcardSemaphore);
   }
+}
+
+void SDcard::appendToFileIrData(const char *path, IRData& data) {
+  if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
+  {
+    File file = SD.open(path, FILE_APPEND);
+    if (!file)
+    {
+      Serial.println("Failed to open file for appending");
+      xSemaphoreGive(sdcardSemaphore);
+      return;
+    }
+
+    if (file.write((const uint8_t*)&data, sizeof(IRData)))
+    {
+      Serial.println("Data appended");
+    }
+    else
+    {
+      Serial.println("Append failed");
+    }
+    file.close();
+    xSemaphoreGive(sdcardSemaphore);
+  }
+
 }
 
 bool SDcard::setupSdCard()

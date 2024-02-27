@@ -100,7 +100,7 @@ namespace ir_handler
     }
 
     void SendCode(IRData *aIRDataToSend)
-    {
+    {printIRResultShort(&Serial, aIRDataToSend, false);
         if (aIRDataToSend->protocol == UNKNOWN)
             return;
         // if (aIRDataToSend->receivedIRData.protocol == UNKNOWN /* i.e. raw */) {

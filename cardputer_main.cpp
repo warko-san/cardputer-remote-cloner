@@ -556,25 +556,29 @@ void copy_key_setup()
   case 8:
     if (!sdCard.exists((sdCard.rootDir + data + "/main_controls.txt").c_str()))
     {
-      sdCard.writeFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
+      sdCard.createFile((sdCard.rootDir + data + "/main_controls.txt").c_str());
+  //    sdCard.writeFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
     }
     break;
   case 9:
     if (!sdCard.exists((sdCard.rootDir + data + "/num_controls.txt").c_str()))
     {
-      sdCard.writeFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), "----- Here's the num controls -----");
+      sdCard.createFile((sdCard.rootDir + data + "/num_controls.txt").c_str());
+//      sdCard.writeFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), "----- Here's the num controls -----");
     }
     break;
   case 10:
     if (!sdCard.exists((sdCard.rootDir + data + "/nav_controls.txt").c_str()))
     {
-      sdCard.writeFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), "----- Here's the nav controls -----");
+      sdCard.createFile((sdCard.rootDir + data + "/nav_controls.txt").c_str());
+ //     sdCard.writeFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), "----- Here's the nav controls -----");
     }
     break;
   case 11:
     if (!sdCard.exists((sdCard.rootDir + data + "/misc_controls.txt").c_str()))
     {
-      sdCard.writeFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), "----- Here's the misc controls -----");
+      sdCard.createFile((sdCard.rootDir + data + "/misc_controls.txt").c_str());
+ //     sdCard.writeFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), "----- Here's the misc controls -----");
     }
     break;
   }
@@ -655,19 +659,23 @@ const char* protocolString = myString.c_str();
       // std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
 
       ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+   //   sdCard.appendToFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFileIrData((sdCard.rootDir + data + "/main_controls.txt").c_str(), IrReceiver.decodedIRData);
       break;
     case 9:
       ir_handler::numControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+//      sdCard.appendToFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFileIrData((sdCard.rootDir + data + "/num_controls.txt").c_str(), IrReceiver.decodedIRData);
       break;
     case 10:
       ir_handler::navControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+//      sdCard.appendToFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFileIrData((sdCard.rootDir + data + "/nav_controls.txt").c_str(), IrReceiver.decodedIRData);
       break;
     case 11:
       ir_handler::miscControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+ //     sdCard.appendToFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), (protocol + protocolString + address + addrHex + " " + command + commHex).c_str());
+      sdCard.appendToFileIrData((sdCard.rootDir + data + "/misc_controls.txt").c_str(), IrReceiver.decodedIRData);
       break;
     }
     // lastDecodedData = IrReceiver.decodedIRData;
@@ -681,7 +689,8 @@ void loadRemoteSetup()
   //  cursor = 0;
   // rstOverride = true;
   // LOAD REMOTE DATA FROM FILE
-  sdCard.readFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str());
+  // sdCard.readFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str());
+  sdCard.readFileIrData((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str(), ir_handler::mainControls, 9);
   delay(100);
   isSwitching = true;
   current_proc = 15;
