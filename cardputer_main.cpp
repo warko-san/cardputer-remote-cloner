@@ -556,9 +556,27 @@ void copy_key_setup()
   switch (saved_proc)
   {
   case 8:
-    if (!sdCard.exists((data + "/main_controls.txt").c_str()))
+    if (!sdCard.exists((sdCard.rootDir + data + "/main_controls.txt").c_str()))
     {
-      sdCard.writeFile((data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
+      sdCard.writeFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
+    }
+    break;
+    case 9:
+    if (!sdCard.exists((sdCard.rootDir + data + "/num_controls.txt").c_str()))
+    {
+      sdCard.writeFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), "----- Here's the num controls -----");
+    }
+    break;
+    case 10:
+    if (!sdCard.exists((sdCard.rootDir + data + "/nav_controls.txt").c_str()))
+    {
+      sdCard.writeFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), "----- Here's the nav controls -----");
+    }
+    break;
+    case 11:
+    if (!sdCard.exists((sdCard.rootDir + data + "/misc_controls.txt").c_str()))
+    {
+      sdCard.writeFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), "----- Here's the num controls -----");
     }
     break;
   }
@@ -568,31 +586,59 @@ void copy_key_setup()
 
 void copy_key_loop()
 {
+  std::string address = "Address ";
+  std::string command = "Command ";
+
   if (ir_handler::Decode())
   {
+    std::stringstream ss;
+      ss << "0x"
+         << std::setfill('0') << std::setw(4) // Ensure 4 characters for uint16_t
+         << std::hex << IrReceiver.decodedIRData.address;
+std::string addrHex = ss.str();
+std::stringstream ss1;
+      ss1 << "0x"
+          << std::setfill('0') << std::setw(2) // Ensure 4 characters for uint16_t
+          << std::hex << IrReceiver.decodedIRData.command;
+      std::string commHex = ss1.str();
+
     switch (saved_proc)
     {
     case 8:
-      std::string address = "Address 0x";
-      std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
-      std::string command = "Command 0x";
-      std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
+      // std::string address = "Address ";
+      // std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
+      // std::string command = "Command ";
+      // std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
+
+      ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
+      sdCard.appendToFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
+      break;
+    case 9:
+      
+      // std::string addressVal = std::to_string(IrReceiver.decodedIRData.address);
+      
+      // std::string commandVal = std::to_string(IrReceiver.decodedIRData.command);
 
       // uint16_t value = 0xABCD; // Example value
 
       // std::stringstream ss;
       // ss << "0x"
       //    << std::setfill('0') << std::setw(4) // Ensure 4 characters for uint16_t
-      //    << std::hex << value;
+      //    << std::hex << IrReceiver.decodedIRData.address;
 
-      // std::string hexStr = ss.str(); // "0xABCD"
+      // std::string addrHex = ss.str();
+      // std::stringstream ss1;
+      // ss1 << "0x"
+      //     << std::setfill('0') << std::setw(2) // Ensure 4 characters for uint16_t
+      //     << std::hex << IrReceiver.decodedIRData.command;
+      // std::string commHex = ss1.str();
 
-      ir_handler::mainControls[cursor] = IrReceiver.decodedIRData;
-      sdCard.appendToFile((data + "/main_controls.txt").c_str(), (address + addressVal + " " + command + commandVal).c_str());
+      ir_handler::numControls[cursor] = IrReceiver.decodedIRData;
+      sdCard.appendToFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), (address + addrHex + " " + command + commHex).c_str());
       break;
     }
-    ir_handler::Resume(); // resume receiver
     delay(200);
+    ir_handler::Resume(); // resume receiver
   }
 
   if (check_select_press())
@@ -600,8 +646,24 @@ void copy_key_loop()
     // rstOverride = false;
     isSwitching = true;
     Serial.printf("About to switch to saved Task: %d\n", saved_proc);
-    current_proc = saved_proc;
+    current_proc = 7;
     Serial.printf("Now curr task Task: %d\n", saved_proc);
+  }
+
+  if (check_next_press())
+  {
+    cursor++;
+    switch (saved_proc)
+    {
+    case 8:
+      cursor = cursor % copy_main_size;
+      drawmenu(mainCtrM, copy_main_size);
+      break;
+
+    default:
+      break;
+    }
+    delay(250);
   }
 }
 
@@ -645,15 +707,15 @@ void sendControlLoop()
       ir_handler::SendCode(&ir_handler::mainControls[cursor]);
       delay(DELAY_BETWEEN_REPEAT);
       break;
-      case 17:
+    case 17:
       ir_handler::SendCode(&ir_handler::numControls[cursor]);
       delay(DELAY_BETWEEN_REPEAT);
       break;
-      case 18:
+    case 18:
       ir_handler::SendCode(&ir_handler::navControls[cursor]);
       delay(DELAY_BETWEEN_REPEAT);
       break;
-      case 19:
+    case 19:
       ir_handler::SendCode(&ir_handler::miscControls[cursor]);
       delay(DELAY_BETWEEN_REPEAT);
       break;
@@ -666,18 +728,44 @@ void sendControlLoop()
   if (check_next_press())
   {
     cursor++;
-    cursor = cursor % sendMainSize;
-    drawmenu(mainCtrMSend, sendMainSize);
+    switch (saved_proc)
+    {
+    case 16:
+      cursor = cursor % sendMainSize;
+      drawmenu(mainCtrMSend, sendMainSize);
+      break;
+
+    default:
+      break;
+    }
     delay(250);
   }
 }
 
-void sendMenuSetup() {
-
+void sendMenuSetup()
+{
+  cursor = 0;
+  rstOverride = true;
+  drawmenu(mainCtrMSend, sendMainSize);
+  delay(500); // Prevent switching after menu loads up
 }
 
-void sendMenuLoop() {
-
+void sendMenuLoop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % sendMainSize;
+    drawmenu(mainCtrMSend, sendMainSize);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    saved_proc = current_proc;
+    current_proc = mainCtrMSend[cursor].command;
+  }
 }
 
 void setup()
