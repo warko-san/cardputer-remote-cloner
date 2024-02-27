@@ -526,9 +526,7 @@ void load_remote_setup()
 {
   cursor = 0;
   sdCard.listDir(sdCard.rootDir.c_str());
-  auto loadedDirs = sdCard.dirs;
-  loadedSize = sizeof(loadedDirs) / sizeof(String);
-  drawmenu(loadedDirs, loadedSize);
+  drawmenu(sdCard.dirs, sdCard.dirCount);
   delay(500); // Prevent switching after menu loads up
 }
 
@@ -537,8 +535,8 @@ void load_remote_loop()
   if (check_next_press())
   {
     cursor++;
-    cursor = cursor % loadedSize;
-    drawmenu(sdCard.dirs, loadedSize);
+    cursor = cursor % sdCard.dirCount;
+    drawmenu(sdCard.dirs, sdCard.dirCount);
     delay(250);
   }
   if (check_select_press())
@@ -676,9 +674,10 @@ void copy_key_loop()
 
 void loadRemoteLogicSetup()
 {
-  cursor = 0;
+//  cursor = 0;
  // rstOverride = true;
   // LOAD REMOTE DATA FROM FILE
+  delay(100);
   current_proc = 15;
   delay(500); // Prevent switching after menu loads up
 }

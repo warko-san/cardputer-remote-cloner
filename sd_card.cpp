@@ -51,6 +51,27 @@ void SDcard::createDir(const char *path)
   }
 }
 
+void SDcard::readFile(const char * path){
+  if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
+  {
+    Serial.printf("Reading file: %s\n", path);
+
+    File file = SD.open(path);
+    if(!file){
+        Serial.println("Failed to open file for reading");
+        xSemaphoreGive(sdcardSemaphore);
+        return;
+    }
+
+    Serial.print("Read from file: ");
+    while(file.available()){
+        Serial.write(file.read());
+    }
+    file.close();
+    xSemaphoreGive(sdcardSemaphore);
+  }
+}
+
 void SDcard::writeFile(const char *path, const char *message)
 {
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
