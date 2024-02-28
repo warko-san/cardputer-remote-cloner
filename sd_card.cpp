@@ -2,7 +2,62 @@
 
 SDcard::SDcard() {}
 
-extern SDcard sdCard;
+bool SDcard::setupSdCard()
+{
+  sdcardSemaphore = xSemaphoreCreateMutex();
+  sdcardSPI = new SPIClass(FSPI);
+  sdcardSPI->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+
+  delay(10);
+  if (!SD.begin(SD_CS_PIN, *sdcardSPI))
+  {
+    sdcardSPI->end();
+    Serial.println("Failed to mount SDCARD");
+    sdcardMounted = false;
+    return false;
+  }
+  else
+  {
+    Serial.println("SDCARD mounted successfully");
+    sdcardMounted = true;
+    uint8_t cardType = SD.cardType();
+    if (cardType == CARD_NONE)
+    {
+      DISP.println("None SD Card");
+      Serial.println("None SD Card");
+    }
+    DISP.print("SD Card Type: ");
+    if (cardType == CARD_MMC)
+    {
+      DISP.println("MMC");
+      Serial.println("MMC");
+    }
+    else if (cardType == CARD_SD)
+    {
+      DISP.println("SDSC");
+      Serial.println("SDSC");
+    }
+    else if (cardType == CARD_SDHC)
+    {
+      DISP.println("SDHC");
+      Serial.println("SDHC");
+    }
+    else
+    {
+      DISP.println("UNKNOWN");
+      Serial.println("UNKNOWN");
+    }
+    uint64_t cardSize = SD.cardSize() / (1024 * 1024);
+    DISP.printf("SD Card Size: %lluMB\n", cardSize);
+    Serial.printf("SD Card Size: %lluMB\n", cardSize);
+
+    if (!exists(rootDir.c_str())) {
+      createDir(rootDir.c_str());
+    }
+    return true;
+  }
+  return false;
+}
 
 bool SDcard::exists(const char *path) {
   return SPIFFS.exists(path);
@@ -91,7 +146,7 @@ void SDcard::readFile(const char * path){
   }
 }
 
-void SDcard::readFileIrData(const char * path, IRData* dataArray, int maxDataCount){
+void SDcard::loadIrDataFromFile(const char * path, IRData* dataArray, int maxDataCount){
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
   {
     Serial.printf("Reading file: %s\n", path);
@@ -209,61 +264,4 @@ void SDcard::appendToFileIrData(const char *path, IRData& data) {
     xSemaphoreGive(sdcardSemaphore);
   }
 
-}
-
-bool SDcard::setupSdCard()
-{
-  sdcardSemaphore = xSemaphoreCreateMutex();
-  sdcardSPI = new SPIClass(FSPI);
-  sdcardSPI->begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
-
-  delay(10);
-  if (!SD.begin(SD_CS_PIN, *sdcardSPI))
-  {
-    sdcardSPI->end();
-    Serial.println("Failed to mount SDCARD");
-    sdcardMounted = false;
-    return false;
-  }
-  else
-  {
-    Serial.println("SDCARD mounted successfully");
-    sdcardMounted = true;
-    uint8_t cardType = SD.cardType();
-    if (cardType == CARD_NONE)
-    {
-      DISP.println("None SD Card");
-      Serial.println("None SD Card");
-    }
-    DISP.print("SD Card Type: ");
-    if (cardType == CARD_MMC)
-    {
-      DISP.println("MMC");
-      Serial.println("MMC");
-    }
-    else if (cardType == CARD_SD)
-    {
-      DISP.println("SDSC");
-      Serial.println("SDSC");
-    }
-    else if (cardType == CARD_SDHC)
-    {
-      DISP.println("SDHC");
-      Serial.println("SDHC");
-    }
-    else
-    {
-      DISP.println("UNKNOWN");
-      Serial.println("UNKNOWN");
-    }
-    uint64_t cardSize = SD.cardSize() / (1024 * 1024);
-    DISP.printf("SD Card Size: %lluMB\n", cardSize);
-    Serial.printf("SD Card Size: %lluMB\n", cardSize);
-
-    if (!exists(rootDir.c_str())) {
-      createDir(rootDir.c_str());
-    }
-    return true;
-  }
-  return false;
 }

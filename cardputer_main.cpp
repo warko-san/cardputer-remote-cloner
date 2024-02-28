@@ -690,7 +690,7 @@ void loadRemoteSetup()
   // rstOverride = true;
   // LOAD REMOTE DATA FROM FILE
   // sdCard.readFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str());
-  sdCard.readFileIrData((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str(), ir_handler::mainControls, 9);
+  sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str(), ir_handler::mainControls, 9);
   delay(100);
   isSwitching = true;
   current_proc = 15;
