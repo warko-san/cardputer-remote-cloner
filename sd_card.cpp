@@ -23,32 +23,25 @@ bool SDcard::setupSdCard()
     uint8_t cardType = SD.cardType();
     if (cardType == CARD_NONE)
     {
-      DISP.println("None SD Card");
       Serial.println("None SD Card");
     }
-    DISP.print("SD Card Type: ");
     if (cardType == CARD_MMC)
     {
-      DISP.println("MMC");
       Serial.println("MMC");
     }
     else if (cardType == CARD_SD)
     {
-      DISP.println("SDSC");
       Serial.println("SDSC");
     }
     else if (cardType == CARD_SDHC)
     {
-      DISP.println("SDHC");
       Serial.println("SDHC");
     }
     else
     {
-      DISP.println("UNKNOWN");
       Serial.println("UNKNOWN");
     }
     uint64_t cardSize = SD.cardSize() / (1024 * 1024);
-    DISP.printf("SD Card Size: %lluMB\n", cardSize);
     Serial.printf("SD Card Size: %lluMB\n", cardSize);
 
     if (!exists(rootDir.c_str())) {
