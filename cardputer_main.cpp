@@ -1,6 +1,6 @@
 #include "cardputer_main.h"
 
-void drawmenu(MENU thismenu[], int size)
+void drawmenu(MENU thismenu[], int size, MarkType mark)
 {
   DISP.setTextColor(FGCOLOR, BGCOLOR);
   DISP.setTextSize(SMALL_TEXT);
@@ -16,7 +16,29 @@ void drawmenu(MENU thismenu[], int size)
     for (int i = 0 + (cursor - 5); i < size; i++)
     {
       DISP.print((cursor == i) ? ">" : " ");
-      DISP.println(thismenu[i].name);
+      if (cursor == i)
+      {
+        switch (mark)
+        {
+        case MarkType::EMPTY:
+          DISP.print(thismenu[i].name);
+          DISP.println("     ");
+          break;
+
+        case MarkType::DOT:
+          DISP.print(thismenu[i].name);
+          DISP.println("    .");
+          break;
+        case MarkType::CHECK:
+          DISP.print(thismenu[i].name);
+          DISP.println("   ..");
+          break;
+        }
+      }
+      else
+      {
+        DISP.println(thismenu[i].name);
+      }
     }
   }
   else
@@ -25,7 +47,29 @@ void drawmenu(MENU thismenu[], int size)
         int i = 0; i < size; i++)
     {
       DISP.print((cursor == i) ? ">" : " ");
-      DISP.println(thismenu[i].name);
+      if (cursor == i)
+      {
+        switch (mark)
+        {
+        case MarkType::EMPTY:
+          DISP.print(thismenu[i].name);
+          DISP.println("     ");
+          break;
+
+        case MarkType::DOT:
+          DISP.print(thismenu[i].name);
+          DISP.println("    .");
+          break;
+        case MarkType::CHECK:
+          DISP.print(thismenu[i].name);
+          DISP.println("   ..");
+          break;
+        }
+      }
+      else
+      {
+        DISP.println(thismenu[i].name);
+      }
     }
   }
 }
@@ -595,6 +639,8 @@ void copy_key_loop()
   if (check_next_press())
   {
     cursor++;
+    sdCard.saveConfirmations = 0;
+
     switch (saved_proc)
     {
     case 8:
@@ -620,25 +666,87 @@ void copy_key_loop()
     delay(250);
   }
 
-  // auto lastDecodedData = IrReceiver.decodedIRData;
+  IRData lastDecodedData = IrReceiver.decodedIRData;
   if (ir_handler::Decode())
   {
+    printIRResultShort(&Serial, &IrReceiver.decodedIRData, false);
     switch (saved_proc)
     {
     case 8:
-      sdCard.appendToFileIrData((sdCard.rootDir + data + "/main_controls.txt").c_str(), IrReceiver.decodedIRData);
+      if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
+      {
+        if (sdCard.saveConfirmations == 1)
+        {
+          sdCard.appendToFileIrData((sdCard.rootDir + data + "/main_controls.txt").c_str(), IrReceiver.decodedIRData);
+          drawmenu(mainCtrM, copy_main_size, MarkType::CHECK);
+          sdCard.saveConfirmations++;
+        }
+      }
+      else
+      {
+        drawmenu(mainCtrM, copy_main_size, MarkType::DOT);
+        sdCard.saveConfirmations++;
+      }
       break;
     case 9:
-      sdCard.appendToFileIrData((sdCard.rootDir + data + "/num_controls.txt").c_str(), IrReceiver.decodedIRData);
+      if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
+      {
+        if (sdCard.saveConfirmations == 1)
+        {
+          sdCard.appendToFileIrData((sdCard.rootDir + data + "/num_controls.txt").c_str(), IrReceiver.decodedIRData);
+          drawmenu(btnCtrM, copy_num_size, MarkType::CHECK);
+          sdCard.saveConfirmations++;
+        }
+      }
+      else
+      {
+        drawmenu(btnCtrM, copy_num_size, MarkType::DOT);
+        sdCard.saveConfirmations++;
+      }
       break;
     case 10:
-      sdCard.appendToFileIrData((sdCard.rootDir + data + "/nav_controls.txt").c_str(), IrReceiver.decodedIRData);
+      if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
+      {
+        if (sdCard.saveConfirmations == 1)
+        {
+          sdCard.appendToFileIrData((sdCard.rootDir + data + "/nav_controls.txt").c_str(), IrReceiver.decodedIRData);
+          drawmenu(navCtrM, copy_nav_size, MarkType::CHECK);
+          sdCard.saveConfirmations++;
+        }
+      }
+      else
+      {
+        drawmenu(navCtrM, copy_nav_size, MarkType::DOT);
+        sdCard.saveConfirmations++;
+      }
       break;
     case 11:
-      sdCard.appendToFileIrData((sdCard.rootDir + data + "/misc_controls.txt").c_str(), IrReceiver.decodedIRData);
+      if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
+      {
+        if (sdCard.saveConfirmations = 1)
+        {
+          sdCard.appendToFileIrData((sdCard.rootDir + data + "/misc_controls.txt").c_str(), IrReceiver.decodedIRData);
+          drawmenu(miscCtrM, copy_misc_size, MarkType::CHECK);
+          sdCard.saveConfirmations++;
+        }
+      }
+      else
+      {
+        drawmenu(miscCtrM, copy_misc_size, MarkType::DOT);
+        sdCard.saveConfirmations++;
+      }
       break;
     }
-    // lastDecodedData = IrReceiver.decodedIRData;
+    if (IrReceiver.decodedIRData.protocol == UNKNOWN)
+    {
+      ir_handler::Resume();
+      return;
+    }
+    else
+    {
+      lastDecodedData = IrReceiver.decodedIRData;
+    }
+
     delay(300);
     ir_handler::Resume(); // resume receiver
   }
@@ -654,7 +762,6 @@ void loadRemoteSetup()
 
 void loadRemoteLoop()
 {
-
 }
 
 void sendControlSetup()
