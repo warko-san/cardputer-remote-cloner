@@ -755,6 +755,9 @@ void copy_key_loop()
 void loadRemoteSetup()
 {
   sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.txt").c_str(), ir_handler::mainControls, 9);
+  sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/num_controls.txt").c_str(), ir_handler::numControls, 10);
+  sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/nav_controls.txt").c_str(), ir_handler::navControls, 7);
+  sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/misc_controls.txt").c_str(), ir_handler::miscControls, 2);
   isSwitching = true;
   current_proc = 15;
   delay(500);
@@ -781,9 +784,25 @@ void sendControlLoop()
       cursor = cursor % sendMainSize;
       drawmenu(mainCtrMSend, sendMainSize);
       break;
+
+    case 17:
+      cursor = cursor % sendNumSize;
+      drawmenu(btnCtrMSend, sendNumSize);
+      break;
+
+    case 18:
+      cursor = cursor % sendNavSize;
+      drawmenu(navCtrMSend, sendNavSize);
+      break;
+
+    case 19:
+      cursor = cursor % sendMiscSize;
+      drawmenu(miscCtrMSend, sendMiscSize);
+      break;
     }
-    delay(250);
   }
+  delay(250);
+
   if (check_select_press())
   {
     switch (saved_proc)
@@ -856,6 +875,81 @@ void sendMainCtrlLoop()
     rstOverride = false;
     isSwitching = true;
     current_proc = mainCtrMSend[cursor].command;
+  }
+}
+
+void sendNumCtrlSetup()
+{
+  cursor = 0;
+  //  rstOverride = true;
+  drawmenu(btnCtrMSend, sendNumSize);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void sendNumCtrlLoop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % sendNumSize;
+    drawmenu(mainCtrMSend, sendNumSize);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = btnCtrMSend[cursor].command;
+  }
+}
+
+void sendNavCtrlSetup()
+{
+  cursor = 0;
+  //  rstOverride = true;
+  drawmenu(navCtrMSend, sendNavSize);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void sendNavCtrlLoop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % sendNavSize;
+    drawmenu(navCtrMSend, sendNavSize);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = navCtrMSend[cursor].command;
+  }
+}
+
+void sendMiscCtrlSetup()
+{
+  cursor = 0;
+  //  rstOverride = true;
+  drawmenu(miscCtrMSend, sendMiscSize);
+  delay(500); // Prevent switching after menu loads up
+}
+
+void sendMiscCtrlLoop()
+{
+  if (check_next_press())
+  {
+    cursor++;
+    cursor = cursor % sendMiscSize;
+    drawmenu(miscCtrMSend, sendMiscSize);
+    delay(250);
+  }
+  if (check_select_press())
+  {
+    rstOverride = false;
+    isSwitching = true;
+    current_proc = miscCtrMSend[cursor].command;
   }
 }
 
@@ -933,6 +1027,15 @@ void loop()
     case 16:
       sendMainCtrlSetup();
       break;
+    case 17:
+      sendNumCtrlSetup();
+      break;
+    case 18:
+      sendNavCtrlSetup();
+      break;
+    case 19:
+      sendMiscCtrlSetup();
+      break;
     case 20:
       sendControlSetup();
       break;
@@ -988,6 +1091,15 @@ void loop()
     break;
   case 16:
     sendMainCtrlLoop();
+    break;
+  case 17:
+    sendNumCtrlLoop();
+    break;
+  case 18:
+    sendNavCtrlLoop();
+    break;
+  case 19:
+    sendMiscCtrlLoop();
     break;
   case 20:
     sendControlLoop();
