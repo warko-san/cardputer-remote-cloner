@@ -556,28 +556,28 @@ void copy_key_setup()
   case 8:
     if (!sdCard.exists((sdCard.rootDir + data + "/main_controls.txt").c_str()))
     {
-      sdCard.createFile((sdCard.rootDir + data + "/main_controls.txt").c_str());
+      sdCard.createEmptyFile((sdCard.rootDir + data + "/main_controls.txt").c_str());
   //    sdCard.writeFile((sdCard.rootDir + data + "/main_controls.txt").c_str(), "----- Here's the main controls -----");
     }
     break;
   case 9:
     if (!sdCard.exists((sdCard.rootDir + data + "/num_controls.txt").c_str()))
     {
-      sdCard.createFile((sdCard.rootDir + data + "/num_controls.txt").c_str());
+      sdCard.createEmptyFile((sdCard.rootDir + data + "/num_controls.txt").c_str());
 //      sdCard.writeFile((sdCard.rootDir + data + "/num_controls.txt").c_str(), "----- Here's the num controls -----");
     }
     break;
   case 10:
     if (!sdCard.exists((sdCard.rootDir + data + "/nav_controls.txt").c_str()))
     {
-      sdCard.createFile((sdCard.rootDir + data + "/nav_controls.txt").c_str());
+      sdCard.createEmptyFile((sdCard.rootDir + data + "/nav_controls.txt").c_str());
  //     sdCard.writeFile((sdCard.rootDir + data + "/nav_controls.txt").c_str(), "----- Here's the nav controls -----");
     }
     break;
   case 11:
     if (!sdCard.exists((sdCard.rootDir + data + "/misc_controls.txt").c_str()))
     {
-      sdCard.createFile((sdCard.rootDir + data + "/misc_controls.txt").c_str());
+      sdCard.createEmptyFile((sdCard.rootDir + data + "/misc_controls.txt").c_str());
  //     sdCard.writeFile((sdCard.rootDir + data + "/misc_controls.txt").c_str(), "----- Here's the misc controls -----");
     }
     break;

@@ -53,7 +53,7 @@ bool SDcard::setupSdCard()
 }
 
 bool SDcard::exists(const char *path) {
-  return SPIFFS.exists(path);
+  return SD.exists(path);
 }
 
 String* SDcard::listDir(const char * dirname){
@@ -152,9 +152,6 @@ void SDcard::loadIrDataFromFile(const char * path, IRData* dataArray, int maxDat
     }
 
     Serial.print("Read from file: ");
-    // while(file.available()){
-    //     Serial.write(file.read());
-    // }
     int count = 0;
     while (file.available() && count < maxDataCount) {
         file.read((uint8_t*)&dataArray[count], sizeof(IRData));
@@ -191,7 +188,7 @@ void SDcard::writeFile(const char *path, const char *message)
   }
 }
 
-void SDcard::createFile(const char *path)
+void SDcard::createEmptyFile(const char *path)
 {
   if (xSemaphoreTake(sdcardSemaphore, portMAX_DELAY) == pdTRUE)
   {
