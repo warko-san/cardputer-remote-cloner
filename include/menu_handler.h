@@ -51,6 +51,7 @@ public:
     bool check_next_press();
     void switcher_button_proc();
     void check_menu_press();
+    void checkBackPress();
 
     // Menu operations
     void mmenu_setup();
@@ -86,8 +87,8 @@ public:
     void load_remote_setup();
     void load_remote_loop();
 
-    void loadRemoteSetup();
-    void loadRemoteLoop();
+    void loadRemoteControlsSetup();
+    void loadRemoteControlsLoop();
 
     void sendControlSetup();
     void sendControlLoop();
