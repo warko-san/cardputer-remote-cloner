@@ -275,7 +275,7 @@ void MenuHandler::send_setup()
     irHandler.SendSetup();
     cursor = 0;
     // rstOverride = true;
-    drawmenu(ir_handler::sendMenu, ir_handler::currentStoredCodes);
+    drawmenu(irHandler.sendMenu, irHandler.currentStoredCodes);
     delay(500); // Prevent switching after menu loads up
 }
 
@@ -284,13 +284,13 @@ void MenuHandler::send_loop()
     if (check_next_press())
     {
         cursor++;
-        cursor = cursor % ir_handler::currentStoredCodes;
-        drawmenu(ir_handler::sendMenu, ir_handler::currentStoredCodes);
+        cursor = cursor % irHandler.currentStoredCodes;
+        drawmenu(irHandler.sendMenu, irHandler.currentStoredCodes);
         delay(250);
     }
     if (check_select_press())
     {
-        irHandler.SendCode(&ir_handler::sendMenu[cursor].receivedIRData);
+        irHandler.SendCode(&irHandler.sendMenu[cursor].receivedIRData);
         delay(DELAY_BETWEEN_REPEAT);
     }
 }
@@ -590,10 +590,10 @@ void MenuHandler::load_remote_loop()
 
 void MenuHandler::loadRemoteSetup()
 {
-    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.bin").c_str(), ir_handler::mainControls, 9);
-    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/num_controls.bin").c_str(), ir_handler::numControls, 10);
-    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/nav_controls.bin").c_str(), ir_handler::navControls, 7);
-    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/misc_controls.bin").c_str(), ir_handler::miscControls, 2);
+    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.bin").c_str(), irHandler.mainControls, 9);
+    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/num_controls.bin").c_str(), irHandler.numControls, 10);
+    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/nav_controls.bin").c_str(), irHandler.navControls, 7);
+    sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/misc_controls.bin").c_str(), irHandler.miscControls, 2);
     isSwitching = true;
     processHandler.setCurrentProcess(15);
     delay(500);
@@ -643,19 +643,19 @@ void MenuHandler::sendControlLoop()
         switch (processHandler.getSavedProcess())
         {
         case 16:
-            irHandler.SendCode(&ir_handler::mainControls[cursor]);
+            irHandler.SendCode(&irHandler.mainControls[cursor]);
             delay(DELAY_BETWEEN_REPEAT);
             break;
         case 17:
-            irHandler.SendCode(&ir_handler::numControls[cursor]);
+            irHandler.SendCode(&irHandler.numControls[cursor]);
             delay(DELAY_BETWEEN_REPEAT);
             break;
         case 18:
-            irHandler.SendCode(&ir_handler::navControls[cursor]);
+            irHandler.SendCode(&irHandler.navControls[cursor]);
             delay(DELAY_BETWEEN_REPEAT);
             break;
         case 19:
-            irHandler.SendCode(&ir_handler::miscControls[cursor]);
+            irHandler.SendCode(&irHandler.miscControls[cursor]);
             delay(DELAY_BETWEEN_REPEAT);
             break;
         }

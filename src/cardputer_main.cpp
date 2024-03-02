@@ -5,8 +5,6 @@ TaskManager taskManager;
 
 void setup()
 {
-  Serial.begin(115200);
-
   taskManager.setup();
 }
 

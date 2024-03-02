@@ -1,23 +1,5 @@
 #include "ir_handler.h"
 
-namespace ir_handler
-{
-    // Storage for the recorded code
-    StoredIRDataStruct sStoredIRData;
-
-    MenuIr sendMenu[52] = {
-        {"Send signals:", sStoredIRData.receivedIRData}};
-
-    IRData mainControls[9] = {};
-    IRData numControls[10] = {};
-    IRData navControls[7] = {};
-    IRData miscControls[2] = {};
-    IRData sIRData;
-
-    uint8_t currentStoredCodes = 1;
-    uint8_t selectedSavedCode = 0;
-} // namespace ir_handler
-
 IRHandler::IRHandler()
 {
 }
@@ -80,29 +62,29 @@ void IRHandler::StoreCode()
     /*
      * Copy decoded data
      */
-    ir_handler::sStoredIRData.receivedIRData = IrReceiver.decodedIRData;
+    receivedIRData = IrReceiver.decodedIRData;
 
-    snprintf(ir_handler::sendMenu[ir_handler::currentStoredCodes].name, sizeof(ir_handler::sendMenu[ir_handler::currentStoredCodes].name), "%X", IrReceiver.decodedIRData.command);
-    ir_handler::sendMenu[ir_handler::currentStoredCodes].receivedIRData = IrReceiver.decodedIRData;
-    ir_handler::currentStoredCodes++;
+    snprintf(sendMenu[currentStoredCodes].name, sizeof(sendMenu[currentStoredCodes].name), "%X", IrReceiver.decodedIRData.command);
+    sendMenu[currentStoredCodes].receivedIRData = IrReceiver.decodedIRData;
+    currentStoredCodes++;
 
-    if (ir_handler::sStoredIRData.receivedIRData.protocol == UNKNOWN)
+    if (receivedIRData.protocol == UNKNOWN)
     {
         Serial.print(F("Received unknown code and store "));
         Serial.print(IrReceiver.decodedIRData.rawDataPtr->rawlen - 1);
         Serial.println(F(" timing entries as raw "));
         IrReceiver.printIRResultRawFormatted(&Serial, true); // Output the results in RAW format
-        ir_handler::sStoredIRData.rawCodeLength = IrReceiver.decodedIRData.rawDataPtr->rawlen - 1;
+        rawCodeLength = IrReceiver.decodedIRData.rawDataPtr->rawlen - 1;
         /*
          * Store the current raw data in a dedicated array for later usage
          */
-        IrReceiver.compensateAndStoreIRResultInArray(ir_handler::sStoredIRData.rawCode);
+        IrReceiver.compensateAndStoreIRResultInArray(rawCode);
     }
     else
     {
         IrReceiver.printIRResultShort(&Serial);
         IrReceiver.printIRSendUsage(&Serial);
-        ir_handler::sStoredIRData.receivedIRData.flags = 0; // clear flags -esp. repeat- for later sending
+        receivedIRData.flags = 0; // clear flags -esp. repeat- for later sending
         Serial.println();
     }
 }
@@ -120,12 +102,6 @@ void IRHandler::SendCode(IRData *aIRDataToSend)
     //   Serial.println(F(" marks or spaces"));
     // } else {
 
-    //   /*
-    //        * Use the write function, which does the switch for different protocols
-    //        */
-    //   IrSender.write(&aIRDataToSend->irDataArray[selectedSavedCode]);
-    //   printIRResultShort(&Serial, &aIRDataToSend->irDataArray[selectedSavedCode], false);
-    // }
     /*
      * Use the write function, which does the switch for different protocols
      */
