@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "process_handler.h"
 
 ProcessHandler::ProcessHandler()
@@ -30,6 +31,7 @@ void ProcessHandler::setCurrentProcess(Process proc)
 
 void ProcessHandler::saveSendProcess()
 {
+     Serial.printf("Saving Send Process: %d\n", currentProcess);
     sendProcess = currentProcess;
 }
 

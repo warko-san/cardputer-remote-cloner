@@ -634,6 +634,7 @@ void MenuHandler::sendControlLoop()
     if (check_next_press())
     {
         cursor++;
+        Serial.printf("Saved send process is: %d\n", processHandler.getSavedSendProcess());
         switch (processHandler.getSavedSendProcess())
         {
         case Process::SEND_MAIN_CONTROLS:
@@ -687,6 +688,7 @@ void MenuHandler::sendMenuSetup()
 {
     cursor = 0;
     //  rstOverride = true;
+    processHandler.savePrevProcess(Process::LOAD_REMOTE);
     drawmenu(sendRContrM, send_remote_size);
     delay(500); // Prevent switching after menu loads up
 }
@@ -750,7 +752,7 @@ void MenuHandler::sendNumCtrlLoop()
     {
         cursor++;
         cursor = cursor % sendNumSize;
-        drawmenu(mainCtrMSend, sendNumSize);
+        drawmenu(btnCtrMSend, sendNumSize);
         delay(250);
     }
     if (check_select_press())
