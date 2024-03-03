@@ -21,7 +21,7 @@ void IRHandler::readSetup()
 void IRHandler::SendSetup()
 {
     IrReceiver.stop();
-    IrSender.begin(); // Start with IR_SEND_PIN as send pin and enable
+    IrSender.begin(IR_SEND_PIN); // Start with IR_SEND_PIN as send pin and enable
 }
 
 bool IRHandler::Decode()

@@ -370,7 +370,6 @@ void MenuHandler::battery_loop()
         { // If any key is pressed
             rstOverride = false;
             isSwitching = true;
-            processHandler.setCurrentProcess(Process::MAIN_MENU);
             break;
         }
     }
@@ -473,7 +472,7 @@ void MenuHandler::copy_menu_loop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(copyRContrM[cursor].backProcess);
         processHandler.setCurrentProcess(copyRContrM[cursor].command);
         processHandler.saveSendProcess();
     }
@@ -500,7 +499,7 @@ void MenuHandler::copy_main_contr_loop()
     {
         // rstOverride = true;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(mainCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(mainCtrM[cursor].command);
     }
 }
@@ -526,7 +525,7 @@ void MenuHandler::copy_num_loop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(btnCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(btnCtrM[cursor].command);
     }
 }
@@ -552,7 +551,7 @@ void MenuHandler::copy_nav_loop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(navCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(navCtrM[cursor].command);
     }
 }
@@ -578,7 +577,7 @@ void MenuHandler::copy_misc_loop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(miscCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(miscCtrM[cursor].command);
     }
 }
@@ -705,7 +704,7 @@ void MenuHandler::sendMenuLoop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(sendRContrM[cursor].backProcess);
         processHandler.setCurrentProcess(sendRContrM[cursor].command);
         processHandler.saveSendProcess();
     }
@@ -732,7 +731,7 @@ void MenuHandler::sendMainCtrlLoop()
     {
         rstOverride = false;
         isSwitching = true;
-   //     processHandler.savePrevProcess();
+        processHandler.savePrevProcess(mainCtrMSend[cursor].backProcess);
         processHandler.setCurrentProcess(mainCtrMSend[cursor].command);
     }
 }
@@ -758,7 +757,7 @@ void MenuHandler::sendNumCtrlLoop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(btnCtrMSend[cursor].backProcess);
         processHandler.setCurrentProcess(btnCtrMSend[cursor].command);
     }
 }
@@ -784,7 +783,7 @@ void MenuHandler::sendNavCtrlLoop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(navCtrMSend[cursor].backProcess);
         processHandler.setCurrentProcess(navCtrMSend[cursor].command);
     }
 }
@@ -810,7 +809,7 @@ void MenuHandler::sendMiscCtrlLoop()
     {
         rstOverride = false;
         isSwitching = true;
-        processHandler.savePrevProcess();
+        processHandler.savePrevProcess(miscCtrMSend[cursor].backProcess);
         processHandler.setCurrentProcess(miscCtrMSend[cursor].command);
     }
 }
