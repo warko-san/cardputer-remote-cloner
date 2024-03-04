@@ -37,7 +37,7 @@ void TaskManager::loop()
             menuHandler.mmenu_setup();
             break;
         case Process::READ_MENU:
-            menuHandler.read_setup();
+            menuHandler.read_setup(screenProvider);
             break;
         case Process::SEND_MENU:
             menuHandler.send_setup();
@@ -102,7 +102,7 @@ void TaskManager::loop()
         menuHandler.mmenu_loop();
         break;
     case Process::READ_MENU:
-        menuHandler.read_loop();
+        menuHandler.read_loop(screenProvider);
         break;
     case Process::SEND_MENU:
         menuHandler.send_loop();

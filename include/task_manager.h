@@ -11,6 +11,7 @@
 #include "comand_saver.h"
 #include "menu_handler.h"
 #include "process_handler.h"
+#include "screen_provider.h"
 
 class TaskManager
 {
@@ -22,6 +23,7 @@ private:
     MenuHandler menuHandler;
     ComandSaver comandSaver;
     IRHandler irHandler;
+    ScreenProvider screenProvider;
 
 public:
     TaskManager();

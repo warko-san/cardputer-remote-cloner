@@ -1,4 +1,5 @@
-
+#ifndef DEFINITIONS_H
+#define DEFINITIONS_H
 // -------- SYSTEM LOGIC SETUP ----------
 #define BGCOLOR BLACK
 #define FGCOLOR RED
@@ -73,5 +74,7 @@
 #if !defined(STR_HELPER)
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
+#endif
+
 #endif
 

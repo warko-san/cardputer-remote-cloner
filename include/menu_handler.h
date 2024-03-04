@@ -11,6 +11,7 @@ class ProcessHandler;
 class ComandSaver;
 class SDcard;
 class IRHandler;
+class ScreenProvider;
 struct MenuIr;
 
 #ifdef MENUS_H
@@ -56,8 +57,8 @@ public:
     void mmenu_setup();
     void mmenu_loop();
 
-    void read_setup();
-    void read_loop();
+    void read_setup(ScreenProvider &screenProvider);
+    void read_loop(ScreenProvider &screenProvider);
 
     void send_setup();
     void send_loop();

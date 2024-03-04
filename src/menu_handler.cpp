@@ -1,5 +1,6 @@
 #include "menu_handler.h"
 #include "task_manager.h"
+#include "screen_provider.h"
 
 MenuHandler::MenuHandler(ProcessHandler &processHandler, SDcard &sdCard, ComandSaver &comandSaver, IRHandler &irHandler) : processHandler(processHandler), sdCard(sdCard), comandSaver(comandSaver), irHandler(irHandler)
 {
@@ -249,34 +250,22 @@ void MenuHandler::mmenu_loop()
     }
 }
 
-void MenuHandler::read_setup()
+void MenuHandler::read_setup(ScreenProvider &screenProvider)
 {
     cursor = 0;
     // rstOverride = true;
-    DISP.clearDisplay();
-    DISP.setTextColor(WHITE);
-    DISP.setTextSize(MEDIUM_TEXT);
-    DISP.setCursor(10, 20);
-    DISP.println("Reading:");
-    DISP.setTextColor(FGCOLOR, BGCOLOR);
-    DISP.setTextSize(SMALL_TEXT);
+    screenProvider.readScreen();
 
     processHandler.savePrevProcess(Process::MAIN_MENU);
     irHandler.readSetup();
     delay(500); // Prevent switching after menu loads up
 }
 
-void MenuHandler::read_loop()
+void MenuHandler::read_loop(ScreenProvider &screenProvider)
 {
     if (irHandler.Decode())
     {
-        DISP.setCursor(10, 50);
-        DISP.print("Address:");
-        DISP.println(IrReceiver.decodedIRData.address, HEX);
-        DISP.fillRect(10, 70, DISP.width(), 20, BGCOLOR); // Reset the back of line
-        DISP.setCursor(10, 70);
-        DISP.print("Command: 0x");
-        DISP.println(IrReceiver.decodedIRData.command, HEX);
+        screenProvider.showReceivedData(irHandler.receivedIRData.address, irHandler.receivedIRData.command);
         irHandler.StoreCode();
         irHandler.Resume(); // resume receiver
     }
