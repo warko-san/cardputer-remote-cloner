@@ -32,7 +32,7 @@ class ProcessHandler
 private:
     Process currentProcess = Process::MAIN_MENU;
     Process prevProcess = Process::MAIN_MENU;
-    Process sendProcess = Process::EMPTY;
+    Process sendProcess = Process::MAIN_MENU;
 
 public:
     ProcessHandler();

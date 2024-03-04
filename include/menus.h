@@ -2,32 +2,7 @@
 #define MENUS_H
 
 #include <cstdint>
-
-
-enum class Process
-{
-    EMPTY,
-    MAIN_MENU,
-    READ_MENU,
-    SEND_MENU,
-    SETTINGS,
-    BATTERY_INFO,
-    COPY_REMOTE_ENTER_NAME,
-    COPY_REMOTE_CONTROLS,
-    COPY_MAIN_CONTROLS,
-    COPY_NUMBERS,
-    COPY_NAVIGATION,
-    COPY_MISC,
-    LOAD_REMOTE,
-    SAVE_CONTROLS,
-    LOAD_REMOTE_INTO_MEMORY,
-    SEND_REMOTE_CONTROLS,
-    SEND_MAIN_CONTROLS,
-    SEND_NUMBERS,
-    SEND_NAVIGATION,
-    SEND_MISC,
-    SEND_COMMAND
-};
+#include "process.h"
 
 struct MENU
 {
@@ -112,46 +87,46 @@ const MENU sendRContrM[] = {
 const int send_remote_size = sizeof(sendRContrM) / sizeof(MENU);
 
 const MENU mainCtrMSend[] = {
-    {"Power", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Source", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Vol +", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Vol -", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Chan +", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Chan -", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Mute", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Home", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Settings", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
+    {"Power", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Source", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Vol +", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Vol -", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Chan +", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Chan -", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Mute", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Home", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
+    {"Settings", Process::SEND_MAIN_CONTROLS, Process::SEND_REMOTE_CONTROLS},
 };
 const int sendMainSize = sizeof(mainCtrMSend) / sizeof(MENU);
 
 const MENU btnCtrMSend[] = {
-    {"1", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"2", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"3", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"4", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"5", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"6", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"7", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"8", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"9", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"0", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
+    {"1", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"2", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"3", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"4", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"5", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"6", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"7", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"8", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"9", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
+    {"0", Process::SEND_NUMBERS, Process::SEND_REMOTE_CONTROLS},
 };
 const int sendNumSize = sizeof(btnCtrMSend) / sizeof(MENU);
 
 const MENU navCtrMSend[] = {
-    {"Up", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Down", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Left", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Right", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Ok", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Return", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Exit", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
+    {"Up", Process::SEND_NAVIGATION, Process::SEND_REMOTE_CONTROLS},
+    {"Down", Process::SEND_NAVIGATION, Process::SEND_REMOTE_CONTROLS},
+    {"Left", Process::SEND_NAVIGATION, Process::SEND_REMOTE_CONTROLS},
+    {"Right", Process::SEND_NAVIGATION, Process::SEND_REMOTE_CONTROLS},
+    {"Ok", Process::SEND_NAVIGATION, Process::SEND_REMOTE_CONTROLS},
+    {"Return", Process::SEND_NAVIGATION, Process::SEND_REMOTE_CONTROLS},
+    {"Exit", Process::SEND_NAVIGATION, Process::SEND_REMOTE_CONTROLS},
 };
 const int sendNavSize = sizeof(navCtrMSend) / sizeof(MENU);
 
 const MENU miscCtrMSend[] = {
-    {"CH List", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
-    {"Info", Process::SEND_COMMAND, Process::SEND_REMOTE_CONTROLS},
+    {"CH List", Process::SEND_MISC, Process::SEND_REMOTE_CONTROLS},
+    {"Info", Process::SEND_MISC, Process::SEND_REMOTE_CONTROLS},
 };
 const int sendMiscSize = sizeof(miscCtrMSend) / sizeof(MENU);
 

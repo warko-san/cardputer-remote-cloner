@@ -16,6 +16,7 @@ void IRHandler::readSetup()
     printActiveIRProtocols(&Serial);
     Serial.println(F("at pin " STR(IR_RECEIVE_PIN)));
     IrReceiver.start();
+    delay(200);
 }
 
 void IRHandler::SendSetup()
@@ -109,3 +110,26 @@ void IRHandler::SendCode(IRData *aIRDataToSend)
     IrSender.write(aIRDataToSend);
     printIRResultShort(&Serial, aIRDataToSend, false);
 }
+
+void IRHandler::sendCode(Process currentProcess, uint8_t cursor)
+{
+    switch (currentProcess)
+        {
+        case Process::SEND_MAIN_CONTROLS:
+            SendCode(&mainControls[cursor]);
+            delay(DELAY_BETWEEN_REPEAT);
+            break;
+        case Process::SEND_NUMBERS:
+            SendCode(&numControls[cursor]);
+            delay(DELAY_BETWEEN_REPEAT);
+            break;
+        case Process::SEND_NAVIGATION:
+            SendCode(&navControls[cursor]);
+            delay(DELAY_BETWEEN_REPEAT);
+            break;
+        case Process::SEND_MISC:
+            SendCode(&miscControls[cursor]);
+            delay(DELAY_BETWEEN_REPEAT);
+            break;
+        }
+}   

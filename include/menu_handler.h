@@ -18,12 +18,11 @@ struct MenuIr;
 class MenuHandler
 {
 private:
-
     ProcessHandler &processHandler;
     SDcard &sdCard;
     ComandSaver &comandSaver;
     IRHandler &irHandler;
-    
+
     uint8_t oldBattery = 0;
     uint8_t loadedSize = 0;
     String loadedDir = "";
@@ -88,10 +87,10 @@ public:
     void load_remote_loop();
 
     void loadRemoteControlsSetup();
-    void loadRemoteControlsLoop();
+   // void loadRemoteControlsLoop();
 
-    void sendControlSetup();
-    void sendControlLoop();
+   // void sendControlSetup();
+  //  void sendControlLoop();
 
     void sendMenuSetup();
     void sendMenuLoop();
@@ -114,4 +113,3 @@ public:
 #endif // MENUS_H
 
 #endif // MENU_HANDLER_H
-
