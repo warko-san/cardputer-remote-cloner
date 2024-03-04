@@ -25,21 +25,28 @@
 // 20 - Send command
 // ===============================
 
+#include "menus.h"
+
 class ProcessHandler
 {
 private:
-    int current_proc = 1;
-    int saved_proc = 1;
+    Process currentProcess = Process::MAIN_MENU;
+    Process prevProcess = Process::MAIN_MENU;
+    Process sendProcess = Process::MAIN_MENU;
 
 public:
     ProcessHandler();
     ~ProcessHandler();
 
-    void setCurrentProcess(int proc);
-    int getCurrentProcess();
+    void setCurrentProcess(Process proc);
+    Process getCurrentProcess();
 
-    void saveProcess();
-    int getSavedProcess();
+    void savePrevProcess(Process proc);
+    void savePrevProcess();
+    Process getPrevProcess();
+
+    void saveSendProcess();
+    Process getSavedSendProcess();
 };
 
 #endif

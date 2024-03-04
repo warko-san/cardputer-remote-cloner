@@ -1,6 +1,7 @@
 #ifndef IR_HANDLER_H
 #define IR_HANDLER_H
 
+#include "process.h"
 #include "definitions.h" // Define macros for input and output pin etc.
 #include <IRremote.hpp>
 
@@ -13,6 +14,7 @@ struct MenuIr
 class IRHandler
 {
 private:
+
 public:
     IRHandler();
     ~IRHandler();
@@ -40,6 +42,7 @@ public:
     void Resume();
     void StoreCode();
     void SendCode(IRData *aIRDataToSend);
+    void sendCode(Process currentProcess, uint8_t cursor);
 };
 constexpr uint8_t DELAY_BETWEEN_REPEAT = 250;
 #endif

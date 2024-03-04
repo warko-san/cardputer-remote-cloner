@@ -8,22 +8,37 @@ ProcessHandler::~ProcessHandler()
 {
 }
 
-void ProcessHandler::saveProcess()
+void ProcessHandler::savePrevProcess(Process proc)
 {
-    saved_proc = current_proc;
+    prevProcess = proc;
 }
 
-void ProcessHandler::setCurrentProcess(int proc)
+void ProcessHandler::savePrevProcess()
 {
-    current_proc = proc;
+    prevProcess = currentProcess;
 }
 
-int ProcessHandler::getSavedProcess()
+Process ProcessHandler::getPrevProcess()
 {
-    return saved_proc;
+    return prevProcess;
 }
 
-int ProcessHandler::getCurrentProcess()
+void ProcessHandler::setCurrentProcess(Process proc)
 {
-    return current_proc;
+    currentProcess = proc;
+}
+
+void ProcessHandler::saveSendProcess()
+{
+    sendProcess = currentProcess;
+}
+
+Process ProcessHandler::getSavedSendProcess()
+{
+    return sendProcess;
+}
+
+Process ProcessHandler::getCurrentProcess()
+{
+    return currentProcess;
 }

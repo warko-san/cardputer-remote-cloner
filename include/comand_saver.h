@@ -2,6 +2,7 @@
 #define COMAND_SAVER_H
 
 #include <WString.h>
+#include "process.h"
 
 class ProcessHandler;
 class MenuHandler;

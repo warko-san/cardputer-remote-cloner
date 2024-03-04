@@ -194,7 +194,7 @@ void MenuHandler::switcher_button_proc()
         if (check_next_press())
         {
             isSwitching = true;
-            processHandler.setCurrentProcess(1);
+            processHandler.setCurrentProcess(Process::MAIN_MENU);
         }
     }
 }
@@ -203,11 +203,23 @@ void MenuHandler::switcher_button_proc()
 void MenuHandler::check_menu_press()
 {
     M5Cardputer.update();
-    if (M5Cardputer.Keyboard.isKeyPressed(',') || M5Cardputer.Keyboard.isKeyPressed('`'))
+    if (M5Cardputer.Keyboard.isKeyPressed('`'))
     {
         isSwitching = true;
         rstOverride = false;
-        processHandler.setCurrentProcess(1);
+        processHandler.setCurrentProcess(Process::MAIN_MENU);
+        delay(100);
+    }
+}
+
+void MenuHandler::checkBackPress()
+{
+    M5Cardputer.update();
+    if (M5Cardputer.Keyboard.isKeyPressed(','))
+    {
+        isSwitching = true;
+        rstOverride = false;
+        processHandler.setCurrentProcess(processHandler.getPrevProcess());
         delay(100);
     }
 }
@@ -249,6 +261,7 @@ void MenuHandler::read_setup()
     DISP.setTextColor(FGCOLOR, BGCOLOR);
     DISP.setTextSize(SMALL_TEXT);
 
+    processHandler.savePrevProcess(Process::MAIN_MENU);
     irHandler.readSetup();
     delay(500); // Prevent switching after menu loads up
 }
@@ -275,6 +288,7 @@ void MenuHandler::send_setup()
     irHandler.SendSetup();
     cursor = 0;
     // rstOverride = true;
+    processHandler.savePrevProcess(Process::MAIN_MENU);
     drawmenu(irHandler.sendMenu, irHandler.currentStoredCodes);
     delay(500); // Prevent switching after menu loads up
 }
@@ -333,6 +347,7 @@ void MenuHandler::battery_setup()
     rstOverride = false;
     pinMode(VBAT_PIN, INPUT);
     uint8_t battery = ((((analogRead(VBAT_PIN)) - 1842) * 100) / 738);
+    processHandler.savePrevProcess(Process::MAIN_MENU);
     battery_drawmenu(battery);
     delay(500); // Prevent switching after menu loads up
                 /*
@@ -355,7 +370,6 @@ void MenuHandler::battery_loop()
         { // If any key is pressed
             rstOverride = false;
             isSwitching = true;
-            processHandler.setCurrentProcess(1);
             break;
         }
     }
@@ -388,6 +402,7 @@ void MenuHandler::enter_name_setup()
     DISP.setCursor(10, DISP.height() - 48);
     DISP.println(">");
     data = "";
+    processHandler.savePrevProcess(Process::MAIN_MENU);
 
     delay(400);
 }
@@ -424,7 +439,7 @@ void MenuHandler::enter_name_loop()
                 }
                 comandSaver.data = data;
                 isSwitching = true;
-                processHandler.setCurrentProcess(7);
+                processHandler.setCurrentProcess(Process::COPY_REMOTE_CONTROLS);
             }
 
             DISP.fillRect(25, DISP.height() - 48, DISP.width(), 25, BLACK);
@@ -440,6 +455,7 @@ void MenuHandler::copy_menu_setup()
     cursor = 0;
     // rstOverride = true;
     drawmenu(copyRContrM, copy_remote_size);
+    processHandler.savePrevProcess(Process::MAIN_MENU);
     delay(500); // Prevent switching after menu loads up
 }
 
@@ -456,8 +472,9 @@ void MenuHandler::copy_menu_loop()
     {
         rstOverride = false;
         isSwitching = true;
+        processHandler.savePrevProcess(copyRContrM[cursor].backProcess);
         processHandler.setCurrentProcess(copyRContrM[cursor].command);
-        processHandler.saveProcess();
+        processHandler.saveSendProcess();
     }
 }
 
@@ -482,7 +499,7 @@ void MenuHandler::copy_main_contr_loop()
     {
         // rstOverride = true;
         isSwitching = true;
-
+        processHandler.savePrevProcess(mainCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(mainCtrM[cursor].command);
     }
 }
@@ -508,6 +525,7 @@ void MenuHandler::copy_num_loop()
     {
         rstOverride = false;
         isSwitching = true;
+        processHandler.savePrevProcess(btnCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(btnCtrM[cursor].command);
     }
 }
@@ -533,6 +551,7 @@ void MenuHandler::copy_nav_loop()
     {
         rstOverride = false;
         isSwitching = true;
+        processHandler.savePrevProcess(navCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(navCtrM[cursor].command);
     }
 }
@@ -558,6 +577,7 @@ void MenuHandler::copy_misc_loop()
     {
         rstOverride = false;
         isSwitching = true;
+        processHandler.savePrevProcess(miscCtrM[cursor].backProcess);
         processHandler.setCurrentProcess(miscCtrM[cursor].command);
     }
 }
@@ -565,6 +585,7 @@ void MenuHandler::copy_misc_loop()
 void MenuHandler::load_remote_setup()
 {
     cursor = 0;
+    processHandler.savePrevProcess(Process::MAIN_MENU);
     sdCard.listDir(sdCard.rootDir.c_str());
     drawmenu(sdCard.dirs, sdCard.dirCount);
     delay(500); // Prevent switching after menu loads up
@@ -584,88 +605,27 @@ void MenuHandler::load_remote_loop()
         rstOverride = false;
         isSwitching = true;
         loadedDir = sdCard.dirs[cursor];
-        processHandler.setCurrentProcess(14);
+        processHandler.setCurrentProcess(Process::LOAD_REMOTE_INTO_MEMORY);
     }
 }
 
-void MenuHandler::loadRemoteSetup()
+void MenuHandler::loadRemoteControlsSetup()
 {
     sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/main_controls.bin").c_str(), irHandler.mainControls, 9);
     sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/num_controls.bin").c_str(), irHandler.numControls, 10);
     sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/nav_controls.bin").c_str(), irHandler.navControls, 7);
     sdCard.loadIrDataFromFile((sdCard.rootDir + "/" + loadedDir + "/misc_controls.bin").c_str(), irHandler.miscControls, 2);
     isSwitching = true;
-    processHandler.setCurrentProcess(15);
+    processHandler.setCurrentProcess(Process::SEND_REMOTE_CONTROLS);
     delay(500);
-}
-
-void MenuHandler::loadRemoteLoop()
-{
-}
-
-void MenuHandler::sendControlSetup()
-{
-    irHandler.SendSetup();
-}
-
-void MenuHandler::sendControlLoop()
-{
-    if (check_next_press())
-    {
-        cursor++;
-        switch (processHandler.getSavedProcess())
-        {
-        case 16:
-            cursor = cursor % sendMainSize;
-            drawmenu(mainCtrMSend, sendMainSize);
-            break;
-
-        case 17:
-            cursor = cursor % sendNumSize;
-            drawmenu(btnCtrMSend, sendNumSize);
-            break;
-
-        case 18:
-            cursor = cursor % sendNavSize;
-            drawmenu(navCtrMSend, sendNavSize);
-            break;
-
-        case 19:
-            cursor = cursor % sendMiscSize;
-            drawmenu(miscCtrMSend, sendMiscSize);
-            break;
-        }
-    }
-    delay(250);
-
-    if (check_select_press())
-    {
-        switch (processHandler.getSavedProcess())
-        {
-        case 16:
-            irHandler.SendCode(&irHandler.mainControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
-        case 17:
-            irHandler.SendCode(&irHandler.numControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
-        case 18:
-            irHandler.SendCode(&irHandler.navControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
-        case 19:
-            irHandler.SendCode(&irHandler.miscControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
-        }
-    }
 }
 
 void MenuHandler::sendMenuSetup()
 {
     cursor = 0;
     //  rstOverride = true;
+    irHandler.SendSetup();
+    processHandler.savePrevProcess(Process::LOAD_REMOTE);
     drawmenu(sendRContrM, send_remote_size);
     delay(500); // Prevent switching after menu loads up
 }
@@ -683,13 +643,13 @@ void MenuHandler::sendMenuLoop()
     {
         rstOverride = false;
         isSwitching = true;
+        processHandler.savePrevProcess(sendRContrM[cursor].backProcess);
         processHandler.setCurrentProcess(sendRContrM[cursor].command);
-        processHandler.saveProcess();
     }
 }
 
 void MenuHandler::sendMainCtrlSetup()
-{
+{ 
     cursor = 0;
     //  rstOverride = true;
     drawmenu(mainCtrMSend, sendMainSize);
@@ -707,9 +667,11 @@ void MenuHandler::sendMainCtrlLoop()
     }
     if (check_select_press())
     {
-        rstOverride = false;
-        isSwitching = true;
-        processHandler.setCurrentProcess(mainCtrMSend[cursor].command);
+        // rstOverride = false;
+        // isSwitching = true;
+        processHandler.savePrevProcess(mainCtrMSend[cursor].backProcess);
+        // processHandler.setCurrentProcess(mainCtrMSend[cursor].command);
+        irHandler.sendCode(mainCtrMSend[cursor].command, cursor);
     }
 }
 
@@ -727,14 +689,13 @@ void MenuHandler::sendNumCtrlLoop()
     {
         cursor++;
         cursor = cursor % sendNumSize;
-        drawmenu(mainCtrMSend, sendNumSize);
+        drawmenu(btnCtrMSend, sendNumSize);
         delay(250);
     }
     if (check_select_press())
     {
-        rstOverride = false;
-        isSwitching = true;
-        processHandler.setCurrentProcess(btnCtrMSend[cursor].command);
+        processHandler.savePrevProcess(btnCtrMSend[cursor].backProcess);
+        irHandler.sendCode(btnCtrMSend[cursor].command, cursor);
     }
 }
 
@@ -757,9 +718,8 @@ void MenuHandler::sendNavCtrlLoop()
     }
     if (check_select_press())
     {
-        rstOverride = false;
-        isSwitching = true;
-        processHandler.setCurrentProcess(navCtrMSend[cursor].command);
+        processHandler.savePrevProcess(navCtrMSend[cursor].backProcess);
+        irHandler.sendCode(navCtrMSend[cursor].command, cursor);
     }
 }
 
@@ -782,9 +742,8 @@ void MenuHandler::sendMiscCtrlLoop()
     }
     if (check_select_press())
     {
-        rstOverride = false;
-        isSwitching = true;
-        processHandler.setCurrentProcess(miscCtrMSend[cursor].command);
+        processHandler.savePrevProcess(miscCtrMSend[cursor].backProcess);
+        irHandler.sendCode(miscCtrMSend[cursor].command, cursor);
     }
 }
 
@@ -794,7 +753,8 @@ void MenuHandler::copyKeyInternalLoop()
     {
         // rstOverride = false;
         isSwitching = true;
-        processHandler.setCurrentProcess(7);
+        processHandler.savePrevProcess();
+        processHandler.setCurrentProcess(Process::COPY_REMOTE_CONTROLS);
     }
 
     if (check_next_press())
@@ -802,21 +762,21 @@ void MenuHandler::copyKeyInternalLoop()
         cursor++;
         sdCard.saveConfirmations = 0;
 
-        switch (processHandler.getSavedProcess())
+        switch (processHandler.getCurrentProcess())
         {
-        case 8:
+        case Process::COPY_MAIN_CONTROLS:
             cursor = cursor % copy_main_size;
             drawmenu(mainCtrM, copy_main_size);
             break;
-        case 9:
+        case Process::COPY_NUMBERS:
             cursor = cursor % copy_num_size;
             drawmenu(btnCtrM, copy_num_size);
             break;
-        case 10:
+        case Process::COPY_NAVIGATION:
             cursor = cursor % copy_nav_size;
             drawmenu(navCtrM, copy_nav_size);
             break;
-        case 11:
+        case Process::COPY_MISC:
             cursor = cursor % copy_misc_size;
             drawmenu(miscCtrM, copy_misc_size);
             break;
