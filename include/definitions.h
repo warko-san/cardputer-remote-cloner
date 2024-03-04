@@ -43,7 +43,7 @@
 // #define DECODE_PANASONIC    // alias for DECODE_KASEIKYO
 // #define DECODE_LG
 // #define DECODE_NEC          // Includes Apple and Onkyo
-#define DECODE_SAMSUNG
+// #define DECODE_SAMSUNG
 // #define DECODE_SONY
 // #define DECODE_RC5
 // #define DECODE_RC6
