@@ -263,13 +263,7 @@ void MenuHandler::read_setup(ScreenProvider &screenProvider)
 
 void MenuHandler::read_loop(ScreenProvider &screenProvider)
 {
-    if (irHandler.Decode())
-    {
-        screenProvider.showReceivedData(irHandler.receivedIRData.address, irHandler.receivedIRData.command);
-        irHandler.StoreCode();
-        irHandler.Resume(); // resume receiver
-    }
-    delay(200);
+    irHandler.plainDecodeLoop(screenProvider);
 }
 
 void MenuHandler::send_setup()
