@@ -1,5 +1,6 @@
 #include "menu_handler.h"
 #include "task_manager.h"
+#include "screen_provider.h"
 
 MenuHandler::MenuHandler(ProcessHandler &processHandler, SDcard &sdCard, ComandSaver &comandSaver, IRHandler &irHandler) : processHandler(processHandler), sdCard(sdCard), comandSaver(comandSaver), irHandler(irHandler)
 {
@@ -249,38 +250,20 @@ void MenuHandler::mmenu_loop()
     }
 }
 
-void MenuHandler::read_setup()
+void MenuHandler::read_setup(ScreenProvider &screenProvider)
 {
     cursor = 0;
     // rstOverride = true;
-    DISP.clearDisplay();
-    DISP.setTextColor(WHITE);
-    DISP.setTextSize(MEDIUM_TEXT);
-    DISP.setCursor(10, 20);
-    DISP.println("Reading:");
-    DISP.setTextColor(FGCOLOR, BGCOLOR);
-    DISP.setTextSize(SMALL_TEXT);
+    screenProvider.readScreen();
 
     processHandler.savePrevProcess(Process::MAIN_MENU);
     irHandler.readSetup();
     delay(500); // Prevent switching after menu loads up
 }
 
-void MenuHandler::read_loop()
+void MenuHandler::read_loop(ScreenProvider &screenProvider)
 {
-    if (irHandler.Decode())
-    {
-        DISP.setCursor(10, 50);
-        DISP.print("Address:");
-        DISP.println(IrReceiver.decodedIRData.address, HEX);
-        DISP.fillRect(10, 70, DISP.width(), 20, BGCOLOR); // Reset the back of line
-        DISP.setCursor(10, 70);
-        DISP.print("Command: 0x");
-        DISP.println(IrReceiver.decodedIRData.command, HEX);
-        irHandler.StoreCode();
-        irHandler.Resume(); // resume receiver
-    }
-    delay(200);
+    irHandler.plainDecodeLoop(screenProvider);
 }
 
 void MenuHandler::send_setup()
@@ -409,45 +392,7 @@ void MenuHandler::enter_name_setup()
 
 void MenuHandler::enter_name_loop()
 {
-    M5Cardputer.update();
-    if (M5Cardputer.Keyboard.isChange())
-    {
-        if (M5Cardputer.Keyboard.isPressed())
-        {
-            Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
-
-            for (auto i : status.word)
-            {
-                data += i;
-            }
-
-            if (status.del)
-            {
-                data.remove(data.length() - 1);
-            }
-
-            if (status.enter)
-            {
-                if (data.indexOf('/') != -1)
-                {
-                    sdCard.createDir((sdCard.rootDir + data).c_str());
-                }
-                else
-                {
-                    data = "/" + data;
-                    sdCard.createDir((sdCard.rootDir + data).c_str());
-                }
-                comandSaver.data = data;
-                isSwitching = true;
-                processHandler.setCurrentProcess(Process::COPY_REMOTE_CONTROLS);
-            }
-
-            DISP.fillRect(25, DISP.height() - 48, DISP.width(), 25, BLACK);
-
-            DISP.setCursor(25, DISP.height() - 48);
-            DISP.print(data);
-        }
-    }
+    
 }
 
 void MenuHandler::copy_menu_setup()
@@ -475,6 +420,69 @@ void MenuHandler::copy_menu_loop()
         processHandler.savePrevProcess(copyRContrM[cursor].backProcess);
         processHandler.setCurrentProcess(copyRContrM[cursor].command);
         processHandler.saveSendProcess();
+    }
+}
+
+void MenuHandler::saveControlsSetup(ScreenProvider &screenProvider)
+{
+    switch (processHandler.getSavedSendProcess())
+    {
+    case Process::COPY_MAIN_CONTROLS:
+        screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+        break;
+    case Process::COPY_NUMBERS:
+        screenProvider.printCurrentCommand(getSelectedCommand(btnCtrM));
+        break;
+    case Process::COPY_NAVIGATION:
+        screenProvider.printCurrentCommand(getSelectedCommand(navCtrM));
+        break;
+    case Process::COPY_MISC:
+        screenProvider.printCurrentCommand(getSelectedCommand(miscCtrM));
+        break;
+    }
+    delay(200);
+}
+
+void MenuHandler::saveControlsLoop(ScreenProvider &screenProvider, IRHandler &irHandler, ComandSaver &comandSaver)
+{
+    if (check_select_press())
+    {
+    }
+    if (check_next_press())
+    {
+        comandSaver.saveConfirmations = 0;
+        comandSaver.comandSaved = false;
+
+        switch (processHandler.getSavedSendProcess())
+        {
+        case Process::COPY_MAIN_CONTROLS:
+            cursor++;
+            cursor = cursor % copy_main_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            comandSaver.comandSaved = false;
+            break;
+
+        case Process::COPY_NUMBERS:
+            cursor++;
+            cursor = cursor % copy_num_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(btnCtrM));
+          comandSaver.comandSaved = false;
+            break;
+        case Process::COPY_NAVIGATION:
+            cursor++;
+            cursor = cursor % copy_nav_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(navCtrM));
+           comandSaver.comandSaved = false;
+            break;
+        case Process::COPY_MISC:
+            cursor++;
+            cursor = cursor % copy_misc_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(miscCtrM));
+            comandSaver.comandSaved = false;
+            break;
+        }
+
+        delay(350);
     }
 }
 
@@ -649,7 +657,7 @@ void MenuHandler::sendMenuLoop()
 }
 
 void MenuHandler::sendMainCtrlSetup()
-{ 
+{
     cursor = 0;
     //  rstOverride = true;
     drawmenu(mainCtrMSend, sendMainSize);
@@ -760,7 +768,7 @@ void MenuHandler::copyKeyInternalLoop()
     if (check_next_press())
     {
         cursor++;
-        sdCard.saveConfirmations = 0;
+        comandSaver.saveConfirmations = 0;
 
         switch (processHandler.getCurrentProcess())
         {
@@ -786,4 +794,9 @@ void MenuHandler::copyKeyInternalLoop()
         }
         delay(250);
     }
+}
+
+const char *MenuHandler::getSelectedCommand(const MENU thisMenu[])
+{
+    return thisMenu[cursor].name;
 }

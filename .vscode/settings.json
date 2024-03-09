@@ -7,5 +7,19 @@
         "OPENOCD_SCRIPTS": "/Users/dmytrosholom/.espressif/tools/openocd-esp32/v0.12.0-esp32-20230921/openocd-esp32/share/openocd/scripts",
         "ESP_ROM_ELF_DIR": "/Users/dmytrosholom/.espressif/tools/esp-rom-elfs/20230320/"
     },
-    "idf.gitPath": "/usr/bin/git"
+    "idf.gitPath": "/usr/bin/git",
+    "files.associations": {
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp",
+        "functional": "cpp",
+        "iomanip": "cpp",
+        "istream": "cpp",
+        "limits": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp"
+    }
 }

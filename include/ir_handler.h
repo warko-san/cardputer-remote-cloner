@@ -2,8 +2,15 @@
 #define IR_HANDLER_H
 
 #include "process.h"
+
 #include "definitions.h" // Define macros for input and output pin etc.
 #include <IRremote.hpp>
+
+class ComandSaver;
+class ScreenProvider;
+class ProcessHandler;
+class SDcard;
+class MenuHandler;
 
 struct MenuIr
 {
@@ -14,7 +21,7 @@ struct MenuIr
 class IRHandler
 {
 private:
-
+    IRData lastDecodedData = IrReceiver.decodedIRData;
 public:
     IRHandler();
     ~IRHandler();
@@ -38,8 +45,8 @@ public:
 
     void readSetup();
     void SendSetup();
-    bool Decode();
-    void Resume();
+    void plainDecodeLoop(ScreenProvider &screenProvider);
+    void decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvider, ProcessHandler &processHandler, MenuHandler &menuHandler, SDcard &sdCard);
     void StoreCode();
     void SendCode(IRData *aIRDataToSend);
     void sendCode(Process currentProcess, uint8_t cursor);

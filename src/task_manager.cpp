@@ -37,7 +37,7 @@ void TaskManager::loop()
             menuHandler.mmenu_setup();
             break;
         case Process::READ_MENU:
-            menuHandler.read_setup();
+            menuHandler.read_setup(screenProvider);
             break;
         case Process::SEND_MENU:
             menuHandler.send_setup();
@@ -70,7 +70,8 @@ void TaskManager::loop()
             menuHandler.load_remote_setup();
             break;
         case Process::SAVE_CONTROLS:
-            comandSaver.copyKeySetup(processHandler, sdCard, irHandler);
+            menuHandler.saveControlsSetup(screenProvider);
+            comandSaver.copyKeySetup(processHandler, sdCard, irHandler, screenProvider, menuHandler);
             break;
         case Process::LOAD_REMOTE_INTO_MEMORY:
             menuHandler.loadRemoteControlsSetup();
@@ -91,7 +92,7 @@ void TaskManager::loop()
             menuHandler.sendMiscCtrlSetup();
             break;
         case Process::SEND_COMMAND:
-   //         menuHandler.sendControlSetup();
+            //         menuHandler.sendControlSetup();
             break;
         }
     }
@@ -102,7 +103,7 @@ void TaskManager::loop()
         menuHandler.mmenu_loop();
         break;
     case Process::READ_MENU:
-        menuHandler.read_loop();
+        menuHandler.read_loop(screenProvider);
         break;
     case Process::SEND_MENU:
         menuHandler.send_loop();
@@ -135,10 +136,11 @@ void TaskManager::loop()
         menuHandler.load_remote_loop();
         break;
     case Process::SAVE_CONTROLS:
-        comandSaver.copyKeyLoop(menuHandler, processHandler, sdCard, irHandler);
+        menuHandler.saveControlsLoop(screenProvider, irHandler, comandSaver);
+        irHandler.decodeLoop(comandSaver, screenProvider, processHandler, menuHandler, sdCard);
         break;
     case Process::LOAD_REMOTE_INTO_MEMORY:
-   //     menuHandler.loadRemoteControlsLoop();
+        //     menuHandler.loadRemoteControlsLoop();
         break;
     case Process::SEND_REMOTE_CONTROLS:
         menuHandler.sendMenuLoop();

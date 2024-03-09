@@ -1,4 +1,6 @@
 #include "ir_handler.h"
+#include "comand_saver.h"
+#include "screen_provider.h"
 
 IRHandler::IRHandler()
 {
@@ -25,14 +27,17 @@ void IRHandler::SendSetup()
     IrSender.begin(IR_SEND_PIN); // Start with IR_SEND_PIN as send pin and enable
 }
 
-bool IRHandler::Decode()
+void IRHandler::plainDecodeLoop(ScreenProvider &screenProvider)
 {
-    return IrReceiver.decode();
-}
+    if (IrReceiver.decode())
+    {
+        printIRResultShort(&Serial, &IrReceiver.decodedIRData, false);
 
-void IRHandler::Resume()
-{
-    IrReceiver.resume();
+        screenProvider.showReceivedData(IrReceiver.decodedIRData.address, IrReceiver.decodedIRData.command);
+        StoreCode();
+        delay(300);
+        IrReceiver.resume();
+    }
 }
 
 // Stores the code for later playback in sStoredIRData
@@ -114,22 +119,44 @@ void IRHandler::SendCode(IRData *aIRDataToSend)
 void IRHandler::sendCode(Process currentProcess, uint8_t cursor)
 {
     switch (currentProcess)
+    {
+    case Process::SEND_MAIN_CONTROLS:
+        SendCode(&mainControls[cursor]);
+        delay(DELAY_BETWEEN_REPEAT);
+        break;
+    case Process::SEND_NUMBERS:
+        SendCode(&numControls[cursor]);
+        delay(DELAY_BETWEEN_REPEAT);
+        break;
+    case Process::SEND_NAVIGATION:
+        SendCode(&navControls[cursor]);
+        delay(DELAY_BETWEEN_REPEAT);
+        break;
+    case Process::SEND_MISC:
+        SendCode(&miscControls[cursor]);
+        delay(DELAY_BETWEEN_REPEAT);
+        break;
+    }
+}
+
+void IRHandler::decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvider, ProcessHandler &processHandler, MenuHandler &menuHandler, SDcard &sdCard)
+{
+    if (IrReceiver.decode())
+    {
+        printIRResultShort(&Serial, &IrReceiver.decodedIRData, false);
+        if (IrReceiver.decodedIRData.protocol == UNKNOWN)
         {
-        case Process::SEND_MAIN_CONTROLS:
-            SendCode(&mainControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
-        case Process::SEND_NUMBERS:
-            SendCode(&numControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
-        case Process::SEND_NAVIGATION:
-            SendCode(&navControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
-        case Process::SEND_MISC:
-            SendCode(&miscControls[cursor]);
-            delay(DELAY_BETWEEN_REPEAT);
-            break;
+            lastDecodedData = IrReceiver.decodedIRData;
+            comandSaver.saveConfirmations = 0;
+            IrReceiver.resume();
+            return;
         }
-}   
+        else
+        {
+            comandSaver.saveCommand(lastDecodedData, IrReceiver.decodedIRData, screenProvider, processHandler, menuHandler, sdCard);
+            lastDecodedData = IrReceiver.decodedIRData;
+        }
+        delay(300);
+        IrReceiver.resume();
+    }
+}

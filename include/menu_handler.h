@@ -11,6 +11,7 @@ class ProcessHandler;
 class ComandSaver;
 class SDcard;
 class IRHandler;
+class ScreenProvider;
 struct MenuIr;
 
 #ifdef MENUS_H
@@ -56,8 +57,8 @@ public:
     void mmenu_setup();
     void mmenu_loop();
 
-    void read_setup();
-    void read_loop();
+    void read_setup(ScreenProvider &screenProvider);
+    void read_loop(ScreenProvider &screenProvider);
 
     void send_setup();
     void send_loop();
@@ -70,6 +71,9 @@ public:
 
     void copy_menu_setup();
     void copy_menu_loop();
+
+    void saveControlsSetup(ScreenProvider &screenProvider);
+    void saveControlsLoop(ScreenProvider &screenProvider, IRHandler &irHandler, ComandSaver &comandSaver);
 
     void copy_main_contr_setup();
     void copy_main_contr_loop();
@@ -108,6 +112,8 @@ public:
     void sendMiscCtrlLoop();
 
     void copyKeyInternalLoop();
+
+    const char *getSelectedCommand(const MENU thisMenu[]);
 }; // MenuHandler
 
 #endif // MENUS_H

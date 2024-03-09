@@ -9,125 +9,98 @@ ComandSaver::~ComandSaver()
 {
 }
 
-void ComandSaver::copyKeySetup(ProcessHandler &processHandler, SDcard &sdCard, IRHandler &irHandler)
+void ComandSaver::copyKeySetup(ProcessHandler &processHandler, SDcard &sdCard, IRHandler &irHandler, ScreenProvider &screenProvider, MenuHandler &menuHandler)
 {
     switch (processHandler.getSavedSendProcess())
     {
     case Process::COPY_MAIN_CONTROLS:
-        if (!sdCard.exists((sdCard.rootDir + data + "/main_controls.bin").c_str()))
-        {
-            sdCard.createEmptyFile((sdCard.rootDir + data + "/main_controls.bin").c_str());
-        }
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_MAIN_CONTROLS).c_str());
         break;
     case Process::COPY_NUMBERS:
-        if (!sdCard.exists((sdCard.rootDir + data + "/num_controls.bin").c_str()))
-        {
-            sdCard.createEmptyFile((sdCard.rootDir + data + "/num_controls.bin").c_str());
-        }
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_NUM_CONTROLS).c_str());
         break;
     case Process::COPY_NAVIGATION:
-        if (!sdCard.exists((sdCard.rootDir + data + "/nav_controls.bin").c_str()))
-        {
-            sdCard.createEmptyFile((sdCard.rootDir + data + "/nav_controls.bin").c_str());
-        }
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_NAV_CONTROLS).c_str());
         break;
     case Process::COPY_MISC:
-        if (!sdCard.exists((sdCard.rootDir + data + "/misc_controls.bin").c_str()))
-        {
-            sdCard.createEmptyFile((sdCard.rootDir + data + "/misc_controls.bin").c_str());
-        }
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_MISC_CONTROLS).c_str());
         break;
     }
     irHandler.readSetup();
     delay(200);
 }
 
-void ComandSaver::copyKeyLoop(MenuHandler &menuHandler, ProcessHandler &processHandler, SDcard &sdCard, IRHandler &irHandler)
+void ComandSaver::saveCommand(IRData prevData, IRData currentData, ScreenProvider &screenProvider, ProcessHandler &processHandler, MenuHandler &menuHandler, SDcard &sdCard)
 {
-    menuHandler.copyKeyInternalLoop();
-
-    IRData lastDecodedData = IrReceiver.decodedIRData;
-    if (irHandler.Decode())
+    switch (processHandler.getSavedSendProcess())
     {
-        printIRResultShort(&Serial, &IrReceiver.decodedIRData, false);
-        switch (processHandler.getSavedSendProcess())
+    case Process::COPY_MAIN_CONTROLS:
+        if (prevData.command == currentData.command && prevData.address == currentData.address && prevData.protocol == currentData.protocol)
         {
-        case Process::COPY_MAIN_CONTROLS:
-            if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
+            if (saveConfirmations == 1 && !comandSaved)
             {
-                if (sdCard.saveConfirmations == 1)
-                {
-                    sdCard.appendToFileIrData((sdCard.rootDir + data + "/main_controls.bin").c_str(), IrReceiver.decodedIRData);
-                    menuHandler.drawmenu(mainCtrM, copy_main_size, MarkType::CHECK);
-                    sdCard.saveConfirmations++;
-                }
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_MAIN_CONTROLS).c_str(), currentData);
+                screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
+                comandSaved = true;
+                saveConfirmations++;
             }
-            else
-            {
-                menuHandler.drawmenu(mainCtrM, copy_main_size, MarkType::DOT);
-                sdCard.saveConfirmations++;
-            }
-            break;
-        case Process::COPY_NUMBERS:
-            if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
-            {
-                if (sdCard.saveConfirmations == 1)
-                {
-                    sdCard.appendToFileIrData((sdCard.rootDir + data + "/num_controls.bin").c_str(), IrReceiver.decodedIRData);
-                    menuHandler.drawmenu(btnCtrM, copy_num_size, MarkType::CHECK);
-                    sdCard.saveConfirmations++;
-                }
-            }
-            else
-            {
-                menuHandler.drawmenu(btnCtrM, copy_num_size, MarkType::DOT);
-                sdCard.saveConfirmations++;
-            }
-            break;
-        case Process::COPY_NAVIGATION:
-            if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
-            {
-                if (sdCard.saveConfirmations == 1)
-                {
-                    sdCard.appendToFileIrData((sdCard.rootDir + data + "/nav_controls.bin").c_str(), IrReceiver.decodedIRData);
-                   menuHandler.drawmenu(navCtrM, copy_nav_size, MarkType::CHECK);
-                    sdCard.saveConfirmations++;
-                }
-            }
-            else
-            {
-                menuHandler.drawmenu(navCtrM, copy_nav_size, MarkType::DOT);
-                sdCard.saveConfirmations++;
-            }
-            break;
-        case Process::COPY_MISC:
-            if (lastDecodedData.command == IrReceiver.decodedIRData.command && lastDecodedData.address == IrReceiver.decodedIRData.address && lastDecodedData.protocol == IrReceiver.decodedIRData.protocol)
-            {
-                if (sdCard.saveConfirmations = 1)
-                {
-                    sdCard.appendToFileIrData((sdCard.rootDir + data + "/misc_controls.bin").c_str(), IrReceiver.decodedIRData);
-                    menuHandler.drawmenu(miscCtrM, copy_misc_size, MarkType::CHECK);
-                    sdCard.saveConfirmations++;
-                }
-            }
-            else
-            {
-                menuHandler.drawmenu(miscCtrM, copy_misc_size, MarkType::DOT);
-                sdCard.saveConfirmations++;
-            }
-            break;
-        }
-        if (IrReceiver.decodedIRData.protocol == UNKNOWN)
-        {
-            irHandler.Resume();
-            return;
         }
         else
         {
-            lastDecodedData = IrReceiver.decodedIRData;
+            screenProvider.printCommandData(currentData.address, currentData.command, true, comandSaved);
+            saveConfirmations++;
         }
-
-        delay(300);
-        irHandler.Resume(); // resume receiver
+        break;
+    case Process::COPY_NUMBERS:
+        if (prevData.command == currentData.command && prevData.address == currentData.address && prevData.protocol == currentData.protocol)
+        {
+            if (saveConfirmations == 1 && !comandSaved)
+            {
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_NUM_CONTROLS).c_str(), currentData);
+                screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
+                comandSaved = true;
+                saveConfirmations++;
+            }
+        }
+        else
+        {
+            screenProvider.printCommandData(currentData.address, currentData.command, true, comandSaved);
+            saveConfirmations++;
+        }
+        break;
+    case Process::COPY_NAVIGATION:
+        if (prevData.command == currentData.command && prevData.address == currentData.address && prevData.protocol == currentData.protocol)
+        {
+            if (saveConfirmations == 1 && !comandSaved)
+            {
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_NAV_CONTROLS).c_str(), currentData);
+                screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
+                comandSaved = true;
+                saveConfirmations++;
+            }
+        }
+        else
+        {
+            screenProvider.printCommandData(currentData.address, currentData.command, true, comandSaved);
+            saveConfirmations++;
+        }
+        break;
+    case Process::COPY_MISC:
+        if (prevData.command == currentData.command && prevData.address == currentData.address && prevData.protocol == currentData.protocol)
+        {
+            if (saveConfirmations == 1 && !comandSaved)
+            {
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_MISC_CONTROLS).c_str(), currentData);
+                screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
+                comandSaved = true;
+                saveConfirmations++;
+            }
+        }
+        else
+        {
+            screenProvider.printCommandData(currentData.address, currentData.command, true, comandSaved);
+            saveConfirmations++;
+        }
+        break;
     }
 }
