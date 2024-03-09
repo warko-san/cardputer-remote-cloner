@@ -6,6 +6,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include "ir_handler.h"
+#include "directory.h"
 
 #define SD_CLK_PIN 40
 #define SD_MISO_PIN 39
@@ -24,7 +25,7 @@ public:
   uint8_t dirCount = 0;
   String *dirs = new String[42];
 
-  String rootDir = "/wcopy_universal";
+  String rootDir = ROOT_DIR;
 
   bool setupSdCard();
 

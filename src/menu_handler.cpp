@@ -392,45 +392,7 @@ void MenuHandler::enter_name_setup()
 
 void MenuHandler::enter_name_loop()
 {
-    M5Cardputer.update();
-    if (M5Cardputer.Keyboard.isChange())
-    {
-        if (M5Cardputer.Keyboard.isPressed())
-        {
-            Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
-
-            for (auto i : status.word)
-            {
-                data += i;
-            }
-
-            if (status.del)
-            {
-                data.remove(data.length() - 1);
-            }
-
-            if (status.enter)
-            {
-                if (data.indexOf('/') != -1)
-                {
-                    sdCard.createDir((sdCard.rootDir + data).c_str());
-                }
-                else
-                {
-                    data = "/" + data;
-                    sdCard.createDir((sdCard.rootDir + data).c_str());
-                }
-                comandSaver.data = data;
-                isSwitching = true;
-                processHandler.setCurrentProcess(Process::COPY_REMOTE_CONTROLS);
-            }
-
-            DISP.fillRect(25, DISP.height() - 48, DISP.width(), 25, BLACK);
-
-            DISP.setCursor(25, DISP.height() - 48);
-            DISP.print(data);
-        }
-    }
+    
 }
 
 void MenuHandler::copy_menu_setup()

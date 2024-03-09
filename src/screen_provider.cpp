@@ -71,5 +71,6 @@ void ScreenProvider::printCurrentCommand(String commandName)
     DISP.print("Prepared to save: ");
     DISP.setTextColor(WHITE);
     DISP.setTextSize(MEDIUM_TEXT);
+    DISP.setCursor(10, 30);
     DISP.println(commandName.c_str());
 }

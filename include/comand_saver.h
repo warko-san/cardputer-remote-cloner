@@ -6,6 +6,7 @@
 #include <WString.h>
 #include "process.h"
 #include "ir_handler.h"
+#include "directory.h"
 
 class ProcessHandler;
 class MenuHandler;

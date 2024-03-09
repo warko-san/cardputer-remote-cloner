@@ -37,7 +37,6 @@ public:
     uint8_t cursor = 0;
     bool rstOverride = true; // Reset Button Override. Set to true when navigating menus.
     bool isSwitching = true;
-    String data = "";
 
     void drawmenu(const MENU thismenu[], int size, MarkType mark = MarkType::EMPTY);
 

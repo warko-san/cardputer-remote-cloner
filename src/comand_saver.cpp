@@ -14,16 +14,16 @@ void ComandSaver::copyKeySetup(ProcessHandler &processHandler, SDcard &sdCard, I
     switch (processHandler.getSavedSendProcess())
     {
     case Process::COPY_MAIN_CONTROLS:
-        sdCard.createEmptyFile((sdCard.rootDir + data + "/main_controls.bin").c_str());
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_MAIN_CONTROLS).c_str());
         break;
     case Process::COPY_NUMBERS:
-        sdCard.createEmptyFile((sdCard.rootDir + data + "/num_controls.bin").c_str());
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_NUM_CONTROLS).c_str());
         break;
     case Process::COPY_NAVIGATION:
-        sdCard.createEmptyFile((sdCard.rootDir + data + "/nav_controls.bin").c_str());
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_NAV_CONTROLS).c_str());
         break;
     case Process::COPY_MISC:
-        sdCard.createEmptyFile((sdCard.rootDir + data + "/misc_controls.bin").c_str());
+        sdCard.createEmptyFile((sdCard.rootDir + data + FILE_MISC_CONTROLS).c_str());
         break;
     }
     irHandler.readSetup();
@@ -39,7 +39,7 @@ void ComandSaver::saveCommand(IRData prevData, IRData currentData, ScreenProvide
         {
             if (saveConfirmations == 1 && !comandSaved)
             {
-                sdCard.appendToFileIrData((sdCard.rootDir + data + "/main_controls.bin").c_str(), currentData);
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_MAIN_CONTROLS).c_str(), currentData);
                 screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
                 comandSaved = true;
                 saveConfirmations++;
@@ -56,7 +56,7 @@ void ComandSaver::saveCommand(IRData prevData, IRData currentData, ScreenProvide
         {
             if (saveConfirmations == 1 && !comandSaved)
             {
-                sdCard.appendToFileIrData((sdCard.rootDir + data + "/num_controls.bin").c_str(), currentData);
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_NUM_CONTROLS).c_str(), currentData);
                 screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
                 comandSaved = true;
                 saveConfirmations++;
@@ -73,7 +73,7 @@ void ComandSaver::saveCommand(IRData prevData, IRData currentData, ScreenProvide
         {
             if (saveConfirmations == 1 && !comandSaved)
             {
-                sdCard.appendToFileIrData((sdCard.rootDir + data + "/nav_controls.bin").c_str(), currentData);
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_NAV_CONTROLS).c_str(), currentData);
                 screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
                 comandSaved = true;
                 saveConfirmations++;
@@ -90,7 +90,7 @@ void ComandSaver::saveCommand(IRData prevData, IRData currentData, ScreenProvide
         {
             if (saveConfirmations == 1 && !comandSaved)
             {
-                sdCard.appendToFileIrData((sdCard.rootDir + data + "/misc_controls.bin").c_str(), currentData);
+                sdCard.appendToFileIrData((sdCard.rootDir + data + FILE_MISC_CONTROLS).c_str(), currentData);
                 screenProvider.printCommandData(currentData.address, currentData.command, false, comandSaved);
                 comandSaved = true;
                 saveConfirmations++;
