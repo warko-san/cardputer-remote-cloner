@@ -146,6 +146,7 @@ void IRHandler::decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvi
         printIRResultShort(&Serial, &IrReceiver.decodedIRData, false);
         if (IrReceiver.decodedIRData.protocol == UNKNOWN)
         {
+            comandSaver.saveConfirmations = 0;
             IrReceiver.resume();
             return;
         }
@@ -153,6 +154,8 @@ void IRHandler::decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvi
         {
             comandSaver.saveCommand(lastDecodedData, IrReceiver.decodedIRData, screenProvider, processHandler, menuHandler, sdCard);
             lastDecodedData = IrReceiver.decodedIRData;
+            lastAddress = IrReceiver.decodedIRData.address;
+            lastCommand = IrReceiver.decodedIRData.command;
         }
         delay(300);
         IrReceiver.resume();

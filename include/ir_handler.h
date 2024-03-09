@@ -37,6 +37,9 @@ public:
     uint8_t currentStoredCodes = 1;
     uint8_t selectedSavedCode = 0;
 
+    uint16_t lastAddress = 0;
+    uint16_t lastCommand = 0;
+
     IRData receivedIRData;
     IRData irDataArray[52];
     // extensions for sendRaw

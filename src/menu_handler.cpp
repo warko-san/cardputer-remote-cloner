@@ -461,6 +461,65 @@ void MenuHandler::copy_menu_loop()
     }
 }
 
+void MenuHandler::saveControlsSetup(ScreenProvider &screenProvider)
+{
+    switch (processHandler.getSavedSendProcess())
+    {
+    case Process::COPY_MAIN_CONTROLS:
+        screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+        break;
+    case Process::COPY_NUMBERS:
+        screenProvider.printCurrentCommand(getSelectedCommand(btnCtrM));
+        break;
+    case Process::COPY_NAVIGATION:
+        screenProvider.printCurrentCommand(getSelectedCommand(navCtrM));
+        break;
+    case Process::COPY_MISC:
+        screenProvider.printCurrentCommand(getSelectedCommand(miscCtrM));
+        break;
+    }
+    delay(200);
+}
+
+void MenuHandler::saveControlsLoop(ScreenProvider &screenProvider, IRHandler &irHandler, ComandSaver &comandSaver)
+{
+    if (check_select_press())
+    {
+    }
+    if (check_next_press())
+    {
+        switch (processHandler.getSavedSendProcess())
+        {
+        case Process::COPY_MAIN_CONTROLS:
+            cursor++;
+            cursor = cursor % copy_main_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            break;
+
+        case Process::COPY_NUMBERS:
+            cursor++;
+            cursor = cursor % copy_num_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            //        screenProvider.saveDataScreen(getSelectedCommand(btnCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
+            break;
+        case Process::COPY_NAVIGATION:
+            cursor++;
+            cursor = cursor % copy_nav_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            //        screenProvider.saveDataScreen(getSelectedCommand(navCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
+            break;
+        case Process::COPY_MISC:
+            cursor++;
+            cursor = cursor % copy_misc_size;
+            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            //         screenProvider.saveDataScreen(getSelectedCommand(miscCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
+            break;
+        }
+
+        delay(350);
+    }
+}
+
 void MenuHandler::copy_main_contr_setup()
 {
     cursor = 0;
@@ -771,7 +830,7 @@ void MenuHandler::copyKeyInternalLoop()
     }
 }
 
-const char* MenuHandler::getSelectedCommand(const MENU thisMenu[])
+const char *MenuHandler::getSelectedCommand(const MENU thisMenu[])
 {
     return thisMenu[cursor].name;
 }

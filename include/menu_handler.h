@@ -72,6 +72,9 @@ public:
     void copy_menu_setup();
     void copy_menu_loop();
 
+    void saveControlsSetup(ScreenProvider &screenProvider);
+    void saveControlsLoop(ScreenProvider &screenProvider, IRHandler &irHandler, ComandSaver &comandSaver);
+
     void copy_main_contr_setup();
     void copy_main_contr_loop();
 

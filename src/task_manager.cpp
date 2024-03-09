@@ -70,6 +70,7 @@ void TaskManager::loop()
             menuHandler.load_remote_setup();
             break;
         case Process::SAVE_CONTROLS:
+            menuHandler.saveControlsSetup(screenProvider);
             comandSaver.copyKeySetup(processHandler, sdCard, irHandler, screenProvider, menuHandler);
             break;
         case Process::LOAD_REMOTE_INTO_MEMORY:
@@ -91,7 +92,7 @@ void TaskManager::loop()
             menuHandler.sendMiscCtrlSetup();
             break;
         case Process::SEND_COMMAND:
-   //         menuHandler.sendControlSetup();
+            //         menuHandler.sendControlSetup();
             break;
         }
     }
@@ -135,10 +136,11 @@ void TaskManager::loop()
         menuHandler.load_remote_loop();
         break;
     case Process::SAVE_CONTROLS:
+        menuHandler.saveControlsLoop(screenProvider, irHandler, comandSaver);
         irHandler.decodeLoop(comandSaver, screenProvider, processHandler, menuHandler, sdCard);
         break;
     case Process::LOAD_REMOTE_INTO_MEMORY:
-   //     menuHandler.loadRemoteControlsLoop();
+        //     menuHandler.loadRemoteControlsLoop();
         break;
     case Process::SEND_REMOTE_CONTROLS:
         menuHandler.sendMenuLoop();
