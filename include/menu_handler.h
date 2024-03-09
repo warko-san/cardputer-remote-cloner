@@ -109,6 +109,8 @@ public:
     void sendMiscCtrlLoop();
 
     void copyKeyInternalLoop();
+
+    const char *getSelectedCommand(const MENU thisMenu[]);
 }; // MenuHandler
 
 #endif // MENUS_H

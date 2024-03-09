@@ -22,7 +22,6 @@ public:
   SDcard();
   bool sdcardMounted = false;
   uint8_t dirCount = 0;
-  uint8_t saveConfirmations = 0;
   String *dirs = new String[42];
 
   String rootDir = "/wcopy_universal";

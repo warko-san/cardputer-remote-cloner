@@ -10,6 +10,7 @@ class ComandSaver;
 class ScreenProvider;
 class ProcessHandler;
 class SDcard;
+class MenuHandler;
 
 struct MenuIr
 {
@@ -45,7 +46,7 @@ public:
     void readSetup();
     void SendSetup();
     void plainDecodeLoop(ScreenProvider &screenProvider);
-    void decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvider, ProcessHandler &processHandler, SDcard &sdCard);
+    void decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvider, ProcessHandler &processHandler, MenuHandler &menuHandler, SDcard &sdCard);
     void StoreCode();
     void SendCode(IRData *aIRDataToSend);
     void sendCode(Process currentProcess, uint8_t cursor);

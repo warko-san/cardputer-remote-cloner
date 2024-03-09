@@ -13,6 +13,7 @@ class ScreenProvider
 
     void readScreen();
     void showReceivedData(uint16_t address, uint16_t command);
+    void saveDataScreen(String commandName, uint16_t address, uint16_t command, bool firstInput);
 };
 
 #endif

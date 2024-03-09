@@ -70,7 +70,7 @@ void TaskManager::loop()
             menuHandler.load_remote_setup();
             break;
         case Process::SAVE_CONTROLS:
-            comandSaver.copyKeySetup(processHandler, sdCard, irHandler);
+            comandSaver.copyKeySetup(processHandler, sdCard, irHandler, screenProvider, menuHandler);
             break;
         case Process::LOAD_REMOTE_INTO_MEMORY:
             menuHandler.loadRemoteControlsSetup();
@@ -135,7 +135,7 @@ void TaskManager::loop()
         menuHandler.load_remote_loop();
         break;
     case Process::SAVE_CONTROLS:
-        comandSaver.copyKeyLoop(menuHandler, processHandler, sdCard, irHandler);
+        irHandler.decodeLoop(comandSaver, screenProvider, processHandler, menuHandler, sdCard);
         break;
     case Process::LOAD_REMOTE_INTO_MEMORY:
    //     menuHandler.loadRemoteControlsLoop();

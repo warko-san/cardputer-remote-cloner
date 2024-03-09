@@ -139,7 +139,7 @@ void IRHandler::sendCode(Process currentProcess, uint8_t cursor)
     }
 }
 
-void IRHandler::decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvider, ProcessHandler &processHandler, SDcard &sdCard)
+void IRHandler::decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvider, ProcessHandler &processHandler, MenuHandler &menuHandler, SDcard &sdCard)
 {
     if (IrReceiver.decode())
     {
@@ -151,7 +151,7 @@ void IRHandler::decodeLoop(ComandSaver &comandSaver, ScreenProvider &screenProvi
         }
         else
         {
-            comandSaver.saveCommand(lastDecodedData, IrReceiver.decodedIRData, screenProvider, processHandler, sdCard);
+            comandSaver.saveCommand(lastDecodedData, IrReceiver.decodedIRData, screenProvider, processHandler, menuHandler, sdCard);
             lastDecodedData = IrReceiver.decodedIRData;
         }
         delay(300);

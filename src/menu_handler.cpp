@@ -632,7 +632,7 @@ void MenuHandler::sendMenuLoop()
 }
 
 void MenuHandler::sendMainCtrlSetup()
-{ 
+{
     cursor = 0;
     //  rstOverride = true;
     drawmenu(mainCtrMSend, sendMainSize);
@@ -743,7 +743,7 @@ void MenuHandler::copyKeyInternalLoop()
     if (check_next_press())
     {
         cursor++;
-        sdCard.saveConfirmations = 0;
+        comandSaver.saveConfirmations = 0;
 
         switch (processHandler.getCurrentProcess())
         {
@@ -769,4 +769,9 @@ void MenuHandler::copyKeyInternalLoop()
         }
         delay(250);
     }
+}
+
+const char* MenuHandler::getSelectedCommand(const MENU thisMenu[])
+{
+    return thisMenu[cursor].name;
 }
