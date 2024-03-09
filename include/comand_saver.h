@@ -26,7 +26,6 @@ public:
     bool comandSaved = false;
 
     void copyKeySetup(ProcessHandler &processHandler, SDcard &sdCard, IRHandler &irHandler, ScreenProvider &screenProvider, MenuHandler &menuHandler);
-    // void copyKeyLoop(MenuHandler &menuHandler, ProcessHandler &processHandler, SDcard &sdCard, IRHandler &irHandler);
     void saveCommand(IRData prevData, IRData currentData, ScreenProvider &ScreenProvider, ProcessHandler &processHandler, MenuHandler &MenuHandler, SDcard &sdCard);
 };
 #endif

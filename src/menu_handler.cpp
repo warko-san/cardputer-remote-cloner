@@ -466,21 +466,18 @@ void MenuHandler::saveControlsLoop(ScreenProvider &screenProvider, IRHandler &ir
             cursor++;
             cursor = cursor % copy_num_size;
             screenProvider.printCurrentCommand(getSelectedCommand(btnCtrM));
-            //        screenProvider.saveDataScreen(getSelectedCommand(btnCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
-            comandSaver.comandSaved = false;
+          comandSaver.comandSaved = false;
             break;
         case Process::COPY_NAVIGATION:
             cursor++;
             cursor = cursor % copy_nav_size;
             screenProvider.printCurrentCommand(getSelectedCommand(navCtrM));
-            //        screenProvider.saveDataScreen(getSelectedCommand(navCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
-            comandSaver.comandSaved = false;
+           comandSaver.comandSaved = false;
             break;
         case Process::COPY_MISC:
             cursor++;
             cursor = cursor % copy_misc_size;
             screenProvider.printCurrentCommand(getSelectedCommand(miscCtrM));
-            //         screenProvider.saveDataScreen(getSelectedCommand(miscCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
             comandSaver.comandSaved = false;
             break;
         }
