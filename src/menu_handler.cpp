@@ -488,31 +488,38 @@ void MenuHandler::saveControlsLoop(ScreenProvider &screenProvider, IRHandler &ir
     }
     if (check_next_press())
     {
+        comandSaver.saveConfirmations = 0;
+        comandSaver.comandSaved = false;
+
         switch (processHandler.getSavedSendProcess())
         {
         case Process::COPY_MAIN_CONTROLS:
             cursor++;
             cursor = cursor % copy_main_size;
             screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            comandSaver.comandSaved = false;
             break;
 
         case Process::COPY_NUMBERS:
             cursor++;
             cursor = cursor % copy_num_size;
-            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            screenProvider.printCurrentCommand(getSelectedCommand(btnCtrM));
             //        screenProvider.saveDataScreen(getSelectedCommand(btnCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
+            comandSaver.comandSaved = false;
             break;
         case Process::COPY_NAVIGATION:
             cursor++;
             cursor = cursor % copy_nav_size;
-            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            screenProvider.printCurrentCommand(getSelectedCommand(navCtrM));
             //        screenProvider.saveDataScreen(getSelectedCommand(navCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
+            comandSaver.comandSaved = false;
             break;
         case Process::COPY_MISC:
             cursor++;
             cursor = cursor % copy_misc_size;
-            screenProvider.printCurrentCommand(getSelectedCommand(mainCtrM));
+            screenProvider.printCurrentCommand(getSelectedCommand(miscCtrM));
             //         screenProvider.saveDataScreen(getSelectedCommand(miscCtrM), irHandler.lastAddress, irHandler.lastCommand, comandSaver.saveConfirmations == 0);
+            comandSaver.comandSaved = false;
             break;
         }
 

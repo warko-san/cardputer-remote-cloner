@@ -22,6 +22,7 @@ public:
 
     String data;
     uint8_t saveConfirmations = 0;
+    bool comandSaved = false;
 
     void copyKeySetup(ProcessHandler &processHandler, SDcard &sdCard, IRHandler &irHandler, ScreenProvider &screenProvider, MenuHandler &menuHandler);
     // void copyKeyLoop(MenuHandler &menuHandler, ProcessHandler &processHandler, SDcard &sdCard, IRHandler &irHandler);

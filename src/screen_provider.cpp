@@ -30,8 +30,9 @@ void ScreenProvider::showReceivedData(uint16_t address, uint16_t command)
     DISP.println(command, HEX);
 }
 
-void ScreenProvider::printCommandData(uint16_t address, uint16_t command, bool firstInput)
+void ScreenProvider::printCommandData(uint16_t address, uint16_t command, bool firstInput, bool codeSaved)
 {
+    DISP.fillRect(10, 70, DISP.width(), DISP.height(), BGCOLOR);
     DISP.setTextSize(SMALL_TEXT);
     DISP.setCursor(10, 70);
     DISP.setTextColor(RED);
@@ -50,11 +51,9 @@ void ScreenProvider::printCommandData(uint16_t address, uint16_t command, bool f
     DISP.setCursor(10, 110);
     if (command != 0 && address != 0)
     {
-        if (firstInput)
+        if (firstInput && !codeSaved)
         {
-            DISP.print("Repeat command ");
-            DISP.setCursor(10, 100);
-            DISP.println("to save");
+            DISP.println("Repeat command");
         }
         else
         {
@@ -68,7 +67,7 @@ void ScreenProvider::printCurrentCommand(String commandName)
     DISP.clearDisplay();
     DISP.setTextColor(RED);
     DISP.setTextSize(SMALL_TEXT);
-    DISP.setCursor(10, 20);
+    DISP.setCursor(10, 10);
     DISP.print("Prepared to save: ");
     DISP.setTextColor(WHITE);
     DISP.setTextSize(MEDIUM_TEXT);
